@@ -14,8 +14,8 @@ GP.SPACE_INFO = {
 
 GP.BOARDS = [
   { id: 'candy', name: 'Candy Clouds', sub: 'Sweet skies over Grok Land', song: 'candy', n: 34,
-    theme: { sky: 0xffcdea, fog: 0xffd9f0, fogNear: 50, fogFar: 140, hemiSky: 0xfff0ff, hemiGround: 0xffb0d8, hemiI: 0.8, sunI: 0.85 },
-    ground: 0xfff0f8, rim: 0xffb3dc, sea: 0xffffff, seaY: -3,
+    theme: { sky: 0xff9fdc, fog: 0xffb8e6, fogNear: 60, fogFar: 160, hemiSky: 0xffffff, hemiGround: 0xff9ad0, hemiI: 0.95, sunI: 1.0 },
+    ground: 0xffb3e0, rim: 0xff5fc8, sea: 0x9fe4ff, seaY: -3,
     loop: [[-15, -5], [-9, -11], [0, -8], [9, -12], [16, -5], [17, 4], [10, 10], [1, 7], [-8, 11], [-16, 6]],
     cuts: [{ f: 6 / 34, t: 23 / 34, name: 'Rainbow Bridge', toll: 3, types: 'EBRLE', bridge: 0xff7ad9 }],
     event: { name: 'Sugar Rush!', desc: 'A candy cannon blasts you 3-6 spaces ahead!' },
@@ -134,9 +134,14 @@ const decor = {
     const lolli = (x, z, s) => { const o = new THREE.Group(); const st = M(G.cyl8, 0xffffff, 0.08 * s, 2.4 * s, 0.08 * s); st.position.y = 1.2 * s; o.add(st); const c = GP.pick(cols); const d = M(G.cyl, c, 0.8 * s, 0.22 * s, 0.8 * s); d.rotation.x = Math.PI / 2; d.position.y = 2.6 * s; o.add(d); const d2 = M(G.cyl, 0xffffff, 0.45 * s, 0.24 * s, 0.45 * s); d2.rotation.x = Math.PI / 2; d2.position.y = 2.6 * s; o.add(d2); o.position.set(x, 0, z); o.rotation.y = rnd() * TAU; return o; };
     const cup = (x, z, s) => { const o = new THREE.Group(); const b = M(G.cyl8, 0xd98a4a, 0.6 * s, 0.6 * s, 0.6 * s); b.position.y = 0.3 * s; o.add(b); const f = M(G.cone, GP.pick(cols), 0.75 * s, 0.9 * s, 0.75 * s); f.position.y = 1.0 * s; o.add(f); const ch = M(G.sphereLo, 0xff2a4a, 0.16 * s); ch.position.y = 1.5 * s; o.add(ch); o.position.set(x, 0, z); return o; };
     const gum = (x, z) => { const o = M(new THREE.SphereGeometry(1, 10, 6, 0, TAU, 0, Math.PI / 2), mat(GP.pick(cols), { emissive: 0x222222 }), 0.6); o.position.set(x, 0, z); return o; };
-    for (let i = 0; i < 70; i++) {
-      const x = (rnd() - 0.5) * 50, z = (rnd() - 0.5) * 38; if (!far(g, x, z, 2.4) || Math.hypot(x / 25, z / 19) > 1) continue;
-      const r = rnd(); grp.add(GP.shadowy(r < 0.4 ? lolli(x, z, 0.7 + rnd() * 0.6) : r < 0.7 ? cup(x, z, 0.8 + rnd() * 0.6) : gum(x, z), true, false));
+    for (let i = 0; i < 150; i++) {
+      const x = (rnd() - 0.5) * 50, z = (rnd() - 0.5) * 38; if (!far(g, x, z, 2.2) || Math.hypot(x / 25, z / 19) > 1) continue;
+      const r = rnd(); grp.add(GP.shadowy(r < 0.4 ? lolli(x, z, 0.9 + rnd() * 0.7) : r < 0.7 ? cup(x, z, 1.0 + rnd() * 0.6) : gum(x, z), true, false));
+    }
+    // bright candy-sprinkle dots on the frosting ground (cheap, no shadows)
+    for (let i = 0; i < 90; i++) {
+      const x = (rnd() - 0.5) * 52, z = (rnd() - 0.5) * 40; if (!far(g, x, z, 1.4) || Math.hypot(x / 26, z / 20) > 1) continue;
+      const sp = new THREE.Mesh(G.circle, GP.basic(GP.pick(cols))); sp.scale.setScalar(0.18 + rnd() * 0.22); sp.position.set(x, 0.02, z); grp.add(sp);
     }
     // giant cake in the middle
     const cake = new THREE.Group(); [[3.2, 1.4, 0xffd0e8], [2.3, 1.2, 0xffffff], [1.4, 1.0, 0xff9ad5]].reduce((y, l) => { const t = M(G.cyl20, l[2], l[0], l[1], l[0]); t.position.y = y + l[1] / 2; cake.add(t); return y + l[1]; }, 0);
@@ -199,7 +204,7 @@ GP.buildBoardScene = function (id) {
   const rx = (maxx - minx) / 2 + 7, rz = (maxz - minz) / 2 + 7;
   const island = M(G.cyl20, B.ground, rx, 2, rz); island.position.y = -1; grp.add(island);
   const rim = M(G.cyl20, B.rim, rx + 0.6, 1.2, rz + 0.6); rim.position.y = -1.9; grp.add(rim);
-  const sea = new THREE.Mesh(G.plane, B.seaGlow ? GP.basic(B.sea) : mat(B.sea, { emissive: B.id === 'candy' ? 0x777777 : 0x111111 })); sea.scale.set(400, 1, 400); sea.position.y = B.seaY; grp.add(sea);
+  const sea = new THREE.Mesh(G.plane, B.seaGlow ? GP.basic(B.sea) : mat(B.sea, { emissive: B.id === 'candy' ? 0x3a6a80 : 0x111111 })); sea.scale.set(400, 1, 400); sea.position.y = B.seaY; grp.add(sea);
   GP.shadowy(island, false, true);
   // path pebbles
   const pebM = mat(0xffffff, { transparent: true, opacity: 0.6 });
