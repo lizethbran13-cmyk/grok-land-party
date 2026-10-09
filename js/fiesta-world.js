@@ -322,7 +322,7 @@ const AREAS = W.AREAS = [
   { id: 'isle', name: 'Fiesta Isles', icon: '\uD83C\uDFDD\uFE0F', spawn: [0, 12], ell: [28, 23], theme: { fog: 0xffc8a8, fogNear: 45, fogFar: 140, hemiSky: 0xfff4e0, hemiGround: 0x8ab06a, hemiI: 0.9, sunI: 1.05, sunC: 0xffe6c0 } },
   { id: 'plaza', name: 'Pi\u00f1ata Plaza', icon: '\uD83E\uDE85', spawn: [0, 10], box: [16, 13], theme: { fog: 0xff9ac8, fogNear: 40, fogFar: 110, hemiSky: 0xffe0f0, hemiGround: 0x9a6a8a, hemiI: 0.85, sunI: 0.95, sunC: 0xffd0b0 } },
   { id: 'taco', name: 'Taco Pueblo', icon: '\uD83C\uDF2E', spawn: [0, 10], box: [16, 13], theme: { fog: 0xffc890, fogNear: 40, fogFar: 110, hemiSky: 0xfff0d0, hemiGround: 0xb08a5a, hemiI: 0.9, sunI: 1.0, sunC: 0xffe0b0 } },
-  { id: 'bay', name: 'Maraca Bay', icon: '\uD83C\uDFD6\uFE0F', spawn: [0, 10], box: [16, 13], theme: { fog: 0xb8e8ff, fogNear: 45, fogFar: 130, hemiSky: 0xffffff, hemiGround: 0xd8c08a, hemiI: 0.95, sunI: 1.05, sunC: 0xfff0d0 } },
+  { id: 'bay', name: 'Maraca Bay', icon: '\uD83C\uDFD6\uFE0F', spawn: [0, 10], box: [16, 13], theme: { fog: 0xb8e8ff, fogNear: 45, fogFar: 130, hemiSky: 0xfff4e8, hemiGround: 0xb89a6a, hemiI: 0.72, sunI: 0.85, sunC: 0xffe8c8 } },
 ];
 // gates on the isle (town idx -> position) and the exit gate in every town
 W.GATES = { 1: [0, -20], 2: [-23, 2], 3: [23, 2] };

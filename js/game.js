@@ -332,6 +332,7 @@ function joinOnline(code) {
     GS.connecting = false;
     const S = S_();
     if (e.code === 'hostleft' && S && S.phase !== 'lobby' && S.pl.length) { takeOver(); return; }
+    if (GP.FZ && S && S.mode === 'fiesta') GP.FZ.hostGone(S);
     leaveSession(true); GS.ui = 'online'; setOnlineMsg(e.title + ': ' + e.message);
   });
   room.start();
