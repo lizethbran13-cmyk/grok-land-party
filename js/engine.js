@@ -115,7 +115,7 @@ GP.Snd = (() => {
   function stop() { pending = null; cur = null; if (timer) clearInterval(timer); timer = null; song = null; }
   function setMuted(m) { muted = m; if (master) master.gain.value = m ? 0 : 0.8; }
   function fx(name, a) { if (S[name]) try { S[name](a); } catch (e) { /* ignore */ } }
-  return { init, fx, play, stop, setMuted, isMuted: () => muted };
+  return { init, fx, play, stop, setMuted, isMuted: () => muted, addSong(name, s) { SONGS[name] = s; }, addFx(name, f) { S[name] = f; }, tone: (...a) => tone(...a), noise: (...a) => noise(...a), mf, cur: () => cur };
 })();
 
 /* ---------------- renderer ---------------- */

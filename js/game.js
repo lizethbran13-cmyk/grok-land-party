@@ -39,11 +39,12 @@ function startGame() {
   S.mode = set.mode; S.msg = null; S.choice = null; S.mg = null; S.mgr = null; S.final = null; S.bonus = null; S.lastMgs = []; S.frenzy = false; S.forced = false; S.path = null; S.gid++;
   GS.botMem = S.pl.map(() => ({}));
   if (S.mode === 'board') {
-    S.board = set.board === 'random' ? GP.pick(GP.BOARDS).id : set.board; S.turns = set.turns; S.turn = 1; S.cur = 0;
+    S.board = set.board === 'random' ? GP.pick(GP.BOARDS.filter((b) => !b.dlc || (GP.FZ && GP.FZ.can()))).id : set.board; S.turns = set.turns; S.turn = 1; S.cur = 0;
     S.star = GP.pick(graph().starSpots); S.pl.forEach((p) => { p.sp = 0; p.coins = 10; p.mx = 10; });
     const B = GP.boardById(S.board); msg(B.name, 'Buy stars for ' + STAR_COST + ' coins. Most stars after ' + S.turns + ' turns wins!', B.color);
     setPhase('intro', T(3.6)); fx('fanfare');
-  } else { S.board = null; setPhase('fpick', 0); }
+  } else if (S.mode === 'fiesta' && GP.FZ) { S.board = null; GP.FZ.start(); }
+  else { S.board = null; setPhase('fpick', 0); }
 }
 function seat(pid, name, color, bot) { return { pid, name, color, bot, diff: S_().set.diff, coins: 0, stars: 0, sp: 0, mgw: 0, mx: 0, solo: 0 }; }
 
@@ -117,6 +118,7 @@ function boardEvent(i) {
   fx('event', i);
   const forced = (n, t, s) => { S.forced = true; S.steps = n; msg(t, s, '#ff9a1f'); setPhase('evwait', T(1.8)); };
   const done = (t, s) => { msg(t, s, '#ff9a1f'); setPhase('after', T(2.3)); };
+  if (B.event && B.event.run) { B.event.run({ i, S, r, rivals, forced, done, addCoins, nm, fx, standings }); return; }
   if (B.id === 'candy') {
     if (r < 0.55) { const n = GP.randi(3, 6); forced(n, 'Sugar Rush!', 'A candy cannon blasts ' + nm(i) + ' ' + n + ' spaces ahead!'); }
     else { S.pl.forEach((_, j) => addCoins(j, 3)); done('Cotton Candy Shower!', 'Sweet! Everyone gets 3 coins.'); }
@@ -141,7 +143,7 @@ function placeOf(i) { const S = S_(), p = S.pl[i]; return 1 + S.pl.filter((q) =>
 function endTurn() { const S = S_(); S.msg = null; S.cur++; if (S.cur >= S.pl.length) { S.cur = 0; startMgPick(); } else beginTurn(); }
 
 /* ---- mini game flow ---- */
-function eligible() { const S = S_(), n = S.pl.length; return GP.MG_LIST.filter((id) => !(S.mode === 'board' && MG[id].type === '1v2' && n < 3)); }
+function eligible() { const S = S_(), n = S.pl.length; return GP.MG_LIST.filter((id) => !((S.mode === 'board' || S.mode === 'fiesta') && MG[id].type === '1v2' && n < 3)); }
 function chooseSolo(id) {
   const S = S_(); if (MG[id].type !== '1v2') return -1;
   const mn = Math.min(...S.pl.map((p) => p.solo)); const c = S.pl.map((_, i) => i).filter((i) => S.pl[i].solo === mn); const s = GP.pick(c); S.pl[s].solo++; return s;
@@ -186,7 +188,7 @@ function finishMg() {
   else rows = sc.map((v, i) => { const place = 1 + sc.filter((q) => q > v).length; return { i, place, win: place === 1 && !(n > 1 && sc.every((q) => q === v) && v <= 0) }; });
   rows.forEach((r) => {
     r.label = D.label(mg, r.i); r.coins = 0;
-    if (S.mode === 'board') { r.coins = D.type === '1v2' ? (r.win ? (r.i === mg.solo ? 15 : 10) : 0) : ([10, n === 2 ? 3 : 5, 2][r.place - 1] || 0); if (r.coins) addCoins(r.i, r.coins); }
+    if (S.mode === 'board' || S.mode === 'fiesta') { r.coins = D.type === '1v2' ? (r.win ? (r.i === mg.solo ? 15 : 10) : 0) : ([10, n === 2 ? 3 : 5, 2][r.place - 1] || 0); if (r.coins) addCoins(r.i, r.coins); }
     if (r.win) S.pl[r.i].mgw++;
   });
   rows.sort((a, b) => a.place - b.place);
@@ -194,7 +196,9 @@ function finishMg() {
   S.mg = null; S.ready = S.pl.map((_, i) => isBot(i)); setPhase('mgres', FAST ? 1.5 : 7); fx(rows.some((r) => r.win) ? 'win' : 'select');
 }
 function afterMgRes() {
-  const S = S_(); S.mgr = null;
+  const S = S_();
+  if (S.mode === 'fiesta' && GP.FZ) { GP.FZ.afterMg(S.mgr); S.mgr = null; return; }
+  S.mgr = null;
   if (S.mode === 'free') { setPhase('fpick', 0); return; }
   if (S.turn >= S.turns) { bonusPhase(); return; }
   S.turn++; S.cur = 0; beginTurn();
@@ -233,6 +237,7 @@ const HANDLERS = {
   mgend() { if (S_().pt <= 0) finishMg(); },
   mgres() { const S = S_(); S.pl.forEach((_, i) => { if (isBot(i)) S.ready[i] = true; }); if (S.pt <= 0 || (S.ready.every(Boolean) && S.pt < (FAST ? 1.5 : 7) - 1.2)) afterMgRes(); },
   bonus() { if (S_().pt <= 0) finalPhase(); },
+  roam(dt) { if (GP.FZ) GP.FZ.hostStep(dt); },
 };
 function hostStep(dt) { const S = S_(); if (!S) return; if (S.pt > 0) S.pt -= dt; const h = HANDLERS[S.phase]; if (h) h(dt); }
 
@@ -245,10 +250,11 @@ function hostAct(pid, m) {
     case 'ready': if ((S.phase === 'mgintro' || S.phase === 'mgres') && i >= 0) { S.ready[i] = true; touch(); } break;
     case 'mg': if (S.phase === 'mgplay' && S.mg && S.mg.cd <= 0 && i >= 0) { const D = MG[S.mg.id]; if (D.act) D.act.call(D, S.mg, i, m.v, helpers(S.mg)); } break;
     case 'fpick': if (isHostMe && S.phase === 'fpick') { const id = m.v === 'random' ? GP.pick(eligible()) : m.v; if (MG[id]) { S.mgq = { id, solo: chooseSolo(id) }; toIntro(); } } break;
-    case 'set': if (isHostMe && S.phase === 'lobby' && m.key in S.set) { S.set[m.key] = m.val; touch(); } break;
+    case 'set': if (isHostMe && S.phase === 'lobby' && m.key in S.set && !(GP.FZ && GP.FZ.blockSet(m))) { S.set[m.key] = m.val; touch(); } break;
     case 'start': if (isHostMe && S.phase === 'lobby') startGame(); break;
     case 'rematch': if (isHostMe && (S.phase === 'final' || S.phase === 'fpick')) startGame(); break;
     case 'tolobby': if (isHostMe) { S.phase = 'lobby'; S.mg = null; S.msg = null; touch(); } break;
+    default: if (GP.FZ && typeof m.k === 'string' && m.k.slice(0, 2) === 'fz') GP.FZ.hostAct(i, m, pid);
   }
 }
 function onInput(pid, m) {
@@ -304,7 +310,7 @@ function hostOnline(code) {
     } else toast(p.name + ' left', true);
     touch();
   });
-  room.on('message', (d, from) => { if (!d || typeof d !== 'object') return; if (d.t === 'act') hostAct(from, d); else if (d.t === 'in') onInput(from, d); });
+  room.on('message', (d, from) => { if (!d || typeof d !== 'object') return; if (d.t === 'act') hostAct(from, d); else if (d.t === 'in') onInput(from, d); else if (d.t === 'fz' && GP.FZ) GP.FZ.onPos(from, d); });
   room.on('error', (e) => { GS.connecting = false; if (!GS.S) { GS.ui = 'online'; setOnlineMsg(e.title + ': ' + e.message); GS.role = null; GS.room = null; } else toast(e.title, true); });
   room.start();
 }
@@ -337,7 +343,8 @@ function applyState(s) {
 }
 // host vanished: keep the party going locally, everyone else becomes AI
 function takeOver() {
-  const S = S_(); const r = GS.room; GS.room = null; GS.role = 'solo'; try { if (r) r.leave(); } catch (e) { /* ignore */ }
+  const S = S_(); if (GP.FZ && GP.FZ.hostGone && GP.FZ.hostGone(S)) { leaveSession(); return; }
+  const r = GS.room; GS.room = null; GS.role = 'solo'; try { if (r) r.leave(); } catch (e) { /* ignore */ }
   S.pl.forEach((p) => { if (p.pid !== GS.pid) p.bot = true; });
   GS.botMem = S.pl.map(() => ({})); GS.LP = null;
   S.lobby = [myLobbyEntry()];
@@ -645,9 +652,10 @@ function actHTML(S) {
 function lobbyHTML(S) {
   const ed = GS.role !== 'client', set = S.set, dis = ed ? '' : ' disabled';
   const seg = (key, vals, labels) => '<div class="seg">' + vals.map((v, k) => '<button type="button" data-act="set" data-key="' + key + '" data-v="' + v + '" class="' + (set[key] === v ? 'on' : '') + '"' + dis + '>' + labels[k] + '</button>').join('') + '</div>';
-  let h = '<div class="set"><div class="lab">MODE</div>' + seg('mode', ['board', 'free'], ['Party Board', 'Mini Game Free Play']) + '</div>';
+  let h = '<div class="set"><div class="lab">MODE</div>' + seg('mode', ['board', 'free', 'fiesta'], ['Party Board', 'Mini Game Free Play', GP.FZ ? GP.FZ.modeLabel() : 'Fiesta']) + '</div>';
+  if (set.mode === 'fiesta' && GP.FZ) h += GP.FZ.lobbyInfo();
   if (set.mode === 'board') {
-    h += '<div class="set"><div class="lab">BOARD</div><div class="boards">' + GP.BOARDS.map((b) => '<button type="button" data-act="set" data-key="board" data-v="' + b.id + '" style="--bg:' + b.color + '" class="' + (set.board === b.id ? 'on' : '') + '"' + dis + '>' + esc(b.name) + '</button>').join('') + '<button type="button" data-act="set" data-key="board" data-v="random" style="--bg:#5a3ad0" class="' + (set.board === 'random' ? 'on' : '') + '"' + dis + '>Random</button></div></div>';
+    h += '<div class="set"><div class="lab">BOARD</div><div class="boards">' + GP.BOARDS.map((b) => '<button type="button" data-act="set" data-key="board" data-v="' + b.id + '" style="--bg:' + b.color + '" class="' + (set.board === b.id ? 'on' : '') + (b.dlc ? ' dlc' + (GP.FZ && GP.FZ.can() ? '' : ' locked') : '') + '"' + dis + '>' + esc(b.name) + (b.dlc ? (GP.FZ && GP.FZ.can() ? ' <em class="dlcTag">DLC</em>' : ' \uD83D\uDD12') : '') + '</button>').join('') + '<button type="button" data-act="set" data-key="board" data-v="random" style="--bg:#5a3ad0" class="' + (set.board === 'random' ? 'on' : '') + '"' + dis + '>Random</button></div></div>';
     h += '<div class="set"><div class="lab">TURNS</div>' + seg('turns', [5, 10, 15], ['5 (quick)', '10', '15']) + '</div>';
   }
   h += '<div class="set"><div class="lab">PLAYERS (AI fills empty seats)</div>' + seg('seats', [2, 3], ['2', '3']) + '</div>';
@@ -740,11 +748,12 @@ function uiSync() {
   show('hud', board);
   const inMg = !!S && (ph === 'mgplay' || ph === 'mgend') && !!S.mg;
   show('mghud', inMg);
+  if (GP.FZ) GP.FZ.ui(S, ph, inMg);
   if (!S) { show('bHost', !GS.connecting); return; }
   if (ph === 'lobby') {
     const code = GS.room && GS.role !== 'solo' ? GS.room.code : '';
     setHTML('lobbyCode', code ? 'ROOM CODE<b>' + esc(code) + '</b>Friends tap PLAY ONLINE \u2192 enter this code' : ''); show('lobbyCode', !!code);
-    $('lobbyTitle').textContent = GS.role === 'solo' ? (S.set.mode === 'free' ? 'FREE PLAY SETUP' : 'PARTY SETUP') : 'ONLINE LOBBY';
+    $('lobbyTitle').textContent = GS.role === 'solo' ? (S.set.mode === 'free' ? 'FREE PLAY SETUP' : S.set.mode === 'fiesta' ? 'FIESTA SETUP' : 'PARTY SETUP') : 'ONLINE LOBBY';
     setHTML('lobbyPlayers', lobbyPlayersHTML(S)); setHTML('lobbySettings', lobbyHTML(S));
     $('lobbyWait').textContent = GS.role === 'client' ? 'Waiting for the host to start\u2026' : (GS.role === 'host' && S.lobby.length < 2 ? 'Share the code! Or start now and play with AI.' : '');
     $('lobbyWait').classList.add('ok');
@@ -810,6 +819,7 @@ function frame(now) {
       playFx(S);
       if ((S.phase === 'mgplay' || S.phase === 'mgend') && S.mg) { renderMg(S, dt); Snd.play('mini'); }
       else if (S.phase === 'final' && S.final) { renderPodium(S, dt, clock); Snd.play('title'); }
+      else if (S.mode === 'fiesta' && GP.FZ && S.phase !== 'lobby' && S.fz) { hideBoard(); hidePodium(); MV.stop(); GS.mvUid = 0; GP.FZ.render(S, dt, clock); Snd.play(GP.FZ.song()); }
       else if (S.mode === 'board' && S.board && S.phase !== 'lobby' && S.phase !== 'fpick') { renderBoard(S, dt, clock); Snd.play(GP.boardById(S.board).song); }
       else { renderBackdrop(dt, clock, S.set.mode === 'board' && S.set.board !== 'random' ? S.set.board : 'candy'); Snd.play('title'); }
     } else { renderBackdrop(dt, clock, 'candy'); Snd.play('title'); }
@@ -825,6 +835,9 @@ function frame(now) {
   if (prm.mode === 'host') hostOnline(prm.code); else { $('codeIn').value = prm.code; joinOnline(prm.code); }
 })();
 requestAnimationFrame(frame);
+
+/* hand the fiesta module what it needs from this closure */
+if (GP.FZ) GP.FZ.bind({ GS, S_, setPhase, msg, fx, addCoins, isBot, seatOf, nm, touch, chooseSolo, eligible, toIntro, localInput, toast, doAct, show, setHTML, leaveSession, startSolo, MV, camera, scene, prof, keys, isClient: () => GS.role === 'client', pressA: () => { pendingA = true; } });
 
 /* test / debug hooks */
 window.__party = {

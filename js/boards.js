@@ -42,6 +42,7 @@ GP.BOARDS = [
     event: { name: 'Ghost Trick!', desc: 'A ghost swaps you with a rival, or swipes coins from the leader for you!' },
     color: '#a78bfa', icon: '#cdb8ff' },
 ];
+GP.BOARD_DECOR = {};
 GP.boardById = (id) => GP.BOARDS.find((b) => b.id === id) || GP.BOARDS[0];
 
 /* ---------------- graph ---------------- */
@@ -229,7 +230,7 @@ GP.buildBoardScene = function (id) {
     arch.position.set(a.x + dx * 0.5, 0, a.z + dz * 0.5); arch.rotation.y = ang; grp.add(GP.shadowy(arch, true, false));
   });
   g.land = g.land || openSpot(g);
-  decor[B.id](grp, rnd, g);
+  (decor[B.id] || GP.BOARD_DECOR[B.id])(grp, rnd, g);
   // star marker
   const star = GP.buildStar(1.2); grp.add(star); grp.userData.star = star;
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.9, 30, 12, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff2a0, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide })); grp.add(beam); grp.userData.beam = beam;

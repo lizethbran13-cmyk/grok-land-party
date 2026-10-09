@@ -204,3 +204,61 @@ input { font-family: inherit; font-weight: 800; font-size: 20px; padding: 10px 1
 }
 
 body.kbd #joybase { opacity: .3; }
+
+/* ===== SUPER FIESTA EXPANSION (DLC) ===== */
+.btn.fiesta { background: linear-gradient(90deg,#ff4fd8,#ff7a3d,#ffd23f,#4ade80,#3ff0ff); background-size: 200% 100%; animation: fzShine 4s linear infinite; }
+.btn.fiesta.locked { background: linear-gradient(180deg,#6a5a8a,#3a2d60); animation: none; }
+@keyframes fzShine { to { background-position: 200% 0; } }
+.dlcTag { font-style: normal; font-size: 11px; background: #ffe14d; color: #3a2400; border-radius: 8px; padding: 2px 6px; margin-left: 4px; text-shadow: none; vertical-align: middle; }
+.boards button.locked { opacity: .6; filter: grayscale(.4); }
+.fzLobby { margin: 6px 0 10px; padding: 10px 12px; border-radius: 16px; background: linear-gradient(135deg,#fff0fa,#fff7d6); border: 2px dashed #ff4fd8; font-size: 14px; text-align: left; }
+.fzLobby b { color: #d01fa8; margin-right: 4px; }
+body.fzroam #mgtop, body.fzroam #mgcenter, body.fzroam #mgpanel, body.fzroam #abtn, body.fzroam #mashbtn { display: none !important; }
+#fzHud { position: fixed; inset: 0; z-index: 12; pointer-events: none; }
+#fzHud.hidden { display: none; }
+#fzTop { position: absolute; top: calc(8px + var(--st)); left: calc(8px + var(--sl)); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; max-width: calc(100% - 130px); }
+#fzArea, #fzCoins, #fzPassB { background: rgba(27,20,64,.82); color: #fff; border: 3px solid #fff; border-radius: 18px; padding: 5px 12px; font-weight: 800; font-size: 16px; box-shadow: 0 3px 0 rgba(0,0,0,.25); }
+#fzCoins b { color: #ffe14d; font-size: 19px; } #fzCoins em { font-style: normal; }
+#fzPassB { pointer-events: auto; background: linear-gradient(180deg,#ff6ae0,#d01fa8); }
+#fzChips { position: absolute; top: calc(52px + var(--st)); left: calc(8px + var(--sl)); display: flex; flex-direction: column; gap: 4px; }
+.fzChip { background: rgba(255,255,255,.88); border-left: 6px solid var(--c); border-radius: 10px; padding: 2px 8px; font-size: 13px; font-weight: 700; color: #1b1440; }
+.fzChip small { font-size: 10px; background: #1b1440; color: #fff; border-radius: 6px; padding: 0 4px; } .fzChip b { color: #b06d00; }
+#fzBanner { position: absolute; top: calc(12px + var(--st)); left: 50%; transform: translate(-50%,-140%); transition: transform .3s; background: rgba(27,20,64,.9); border: 3px solid var(--bc,#ff4fd8); color: #fff; border-radius: 20px; padding: 8px 18px; text-align: center; max-width: min(560px,80vw); }
+#fzBanner.show { transform: translate(-50%,0); } #fzBanner b { display: block; font-size: 20px; color: var(--bc,#ff4fd8); } #fzBanner span { font-size: 14px; }
+#fzEmotes { position: absolute; right: calc(16px + var(--sr)); bottom: calc(160px + var(--sb)); display: flex; gap: 6px; }
+#fzEmotes button { pointer-events: auto; width: 48px; height: 48px; border-radius: 50%; border: 3px solid #fff; background: rgba(27,20,64,.8); font-size: 22px; box-shadow: 0 3px 0 rgba(0,0,0,.3); }
+#fzA { position: absolute; right: calc(22px + var(--sr)); bottom: calc(34px + var(--sb)); width: 112px; height: 112px; border-radius: 50%; border: 4px solid #fff; background: radial-gradient(circle at 40% 35%,#9a8ac0,#4b3b8a); color: #fff; font-size: 17px; font-weight: 800; pointer-events: auto; box-shadow: 0 6px 0 rgba(0,0,0,.3); text-shadow: 0 2px 0 rgba(0,0,0,.3); }
+#fzA.ctx { background: radial-gradient(circle at 40% 35%,#ffe680,#ff7a3d); animation: fzPulse 1s ease-in-out infinite; }
+@keyframes fzPulse { 50% { transform: scale(1.06); } }
+#fzHint { position: absolute; right: calc(14px + var(--sr)); bottom: calc(10px + var(--sb)); width: 240px; text-align: right; color: #fff; font-weight: 800; font-size: 13px; text-shadow: 0 2px 0 #1b1440; }
+#fzBubble { position: fixed; z-index: 13; transform: translate(-50%,-100%); background: #fff; color: #1b1440; border: 3px solid #1b1440; border-radius: 18px; padding: 8px 12px; max-width: 240px; font-size: 15px; font-weight: 700; pointer-events: none; box-shadow: 0 4px 0 rgba(0,0,0,.2); }
+#fzBubble b { display: block; color: #d01fa8; font-size: 12px; } #fzBubble.hidden { display: none; }
+#fzBubble::after { content: ''; position: absolute; left: 50%; bottom: -12px; margin-left: -8px; border: 8px solid transparent; border-top-color: #1b1440; }
+#fzPanel { position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center; padding: 12px calc(12px + var(--sr)) calc(12px + var(--sb)) calc(12px + var(--sl)); pointer-events: none; }
+#fzPanel.hidden { display: none; } #fzPanel .card { pointer-events: auto; max-height: 82vh; }
+.fzCard h2 { margin: 2px 0 6px; color: #d01fa8; } .fzCard p { margin: 6px 0; } .fzCard .btn { margin: 4px; }
+.fzGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 8px 0; } .fzGrid .btn { font-size: 15px; padding: 6px 10px; margin: 0; }
+.fzFood { font-size: 56px; animation: fzPulse 1.2s infinite; }
+.fzStamps { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 6px; margin: 8px 0; }
+.fzSt { border: 3px dashed #c8b8e8; border-radius: 14px; padding: 6px; opacity: .55; text-align: center; }
+.fzSt i { display: block; font-style: normal; font-size: 26px; filter: grayscale(1); } .fzSt b { display: block; font-size: 13px; } .fzSt small { font-size: 11px; }
+.fzSt.got { opacity: 1; border: 3px solid #ff4fd8; background: #fff0fa; transform: rotate(-2deg); } .fzSt.got i { filter: none; }
+#fzDance { position: fixed; left: 50%; top: 50%; transform: translate(-50%,-50%); z-index: 35; width: min(380px,92vw); height: min(560px,86vh); display: flex; flex-direction: column; background: rgba(27,20,64,.82); border: 4px solid #fff; border-radius: 24px; padding: 10px; box-shadow: 0 0 40px rgba(255,79,216,.6); }
+#fzDance.hidden { display: none; }
+#fzDance .dhud { color: #fff; font-weight: 800; text-align: center; font-size: 18px; min-height: 28px; } #fzDance .dhud b { color: #ffe14d; font-size: 22px; }
+#fzDance .dhud em { margin-left: 10px; font-style: normal; color: #4ade80; } #fzDance .dhud em.miss { color: #ff6b86; }
+#fzDance .dlanes { flex: 1; display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; position: relative; overflow: hidden; }
+.dlane { position: relative; background: rgba(255,255,255,.07); border-radius: 12px; overflow: hidden; }
+.dline { position: absolute; left: 0; right: 0; bottom: 6px; height: 48px; border: 3px solid rgba(255,255,255,.7); border-radius: 12px; }
+.dn { position: absolute; left: 8%; right: 8%; top: 0; height: 46px; border-radius: 12px; font-style: normal; color: #fff; font-size: 26px; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; }
+.dn.l0 { background: #ff4fd8; } .dn.l1 { background: #3ff0ff; color: #1b1440; } .dn.l2 { background: #4ade80; color: #1b1440; } .dn.l3 { background: #ffd23f; color: #1b1440; } .dn.miss { opacity: .3; }
+#fzDance .dpads { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; margin-top: 8px; }
+.dpad { height: 62px; border-radius: 16px; border: 3px solid #fff; font-size: 26px; font-weight: 800; color: #fff; touch-action: none; }
+.dpad.l0 { background: #d01fa8; } .dpad.l1 { background: #1a9ad8; } .dpad.l2 { background: #1fa84a; } .dpad.l3 { background: #e0a000; } .dpad.down { transform: scale(.92); filter: brightness(1.4); }
+#fzFade { position: fixed; inset: 0; z-index: 36; background: radial-gradient(circle,#ff7ad9,#5a3ad0); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .22s; }
+#fzFade.on { opacity: 1; } #fzFade b { color: #fff; font-size: 34px; text-shadow: 0 4px 0 #1b1440; }
+.fzTeaser { width: min(600px,100%); text-align: left; } .fzTeaser h2 { text-align: center; margin: 6px 0 2px; background: linear-gradient(90deg,#ff4fd8,#ff7a3d,#e0a000); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 28px; }
+.fzBadge { margin: 0 auto; width: max-content; background: #1b1440; color: #ffe14d; font-weight: 800; border-radius: 12px; padding: 3px 10px; font-size: 13px; }
+.fzSub { text-align: center; margin: 0 0 6px; font-weight: 700; } .fzList { padding-left: 18px; margin: 6px 0; } .fzList li { margin: 5px 0; font-size: 15px; }
+.fzHow { text-align: center; font-size: 14px; } .fzTeaser .row { justify-content: center; gap: 8px; display: flex; flex-wrap: wrap; }
+@media (max-height: 500px) { #fzA { width: 92px; height: 92px; font-size: 15px; } #fzEmotes { bottom: calc(132px + var(--sb)); } #fzEmotes button { width: 42px; height: 42px; font-size: 19px; } #fzChips { display: none; } }
