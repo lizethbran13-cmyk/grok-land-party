@@ -207,13 +207,13 @@ FZ.hostAct = function (i, m, pid) {
     case 'fzchal': challenge(S, F, i, v.to); break;
     case 'fztalk': { const n = npcById(v.npc); if (!n || n.a !== p.a) break; const key = i + ':' + n.id; if (!met.has(key)) { met.set(key, 1); C.addCoins(i, 1); } break; }
     case 'fzeat': { const f = FOODS[v.food | 0]; if (!f || p.a !== 2 || !A.stalls.some((s) => s.k === (v.food | 0) && near(s.x, s.z, 3))) break; if (S.pl[i].coins < f.p) { C.fx('wrong', i); break; } C.addCoins(i, -f.p); p.h = v.food | 0; p.ht = F.t + 3.5; p.bf = { k: f.bf, u: F.t + 20 }; C.fx('fzeat', i); break; }
-    case 'fzhit': { if (p.a !== 1 || F.pin.re > 0 || !near(A.pinSpot.x, A.pinSpot.z, 3)) break; const k = 'h' + i; if ((F[k] || -9) > F.t - 0.3) break; F[k] = F.t; F.pin.hp--; F.pin.sw = +F.t.toFixed(2); C.fx('fzhit', i);
+    case 'fzhit': { if (p.a !== 1 || F.pin.re > 0 || !near(A.pinSpot.x, A.pinSpot.z, 3)) break; const k = 'h' + i; if ((F[k] || -9) > F.t - 0.2) break; F[k] = F.t; F.pin.hp--; F.pin.sw = +F.t.toFixed(2); C.fx('fzhit', i);
       if (F.pin.hp <= 0) { F.pin.re = GP.FAST ? 4 : 20; for (let q = 0; q < 14; q++) { const a = q / 14 * TAU, rr = 1.4 + Math.random() * 2.2; F.coins.push([F.cid++, 1, +(10.5 + Math.cos(a) * rr).toFixed(2), +(4 + Math.sin(a) * rr).toFixed(2), q < 2 ? 5 : 1]); } C.addCoins(i, 3); F.pinBy = { id: ++F.uid, i }; C.fx('fzboom', i); C.msg('\u00a1PI\u00d1ATA!', C.nm(i) + ' smashed the pi\u00f1ata! Coins everywhere!', '#ff4fd8'); }
       break; }
     case 'fzdance': { const sc = clamp(+v.score || 0, 0, 100), n = Math.min(11, Math.round(sc / 9)); if (n) C.addCoins(i, n); C.msg('\uD83D\uDC83 ' + C.nm(i) + ' danced!', 'Rank ' + rank(sc) + ' \u00b7 +' + n + ' coins', '#3ff0ff'); break; }
     case 'fzwish': { if (p.a !== 1 || !near(A.fount.x, A.fount.z, 4) || S.pl[i].coins < 1) break; C.addCoins(i, -1); if (Math.random() < 0.22) { C.addCoins(i, 6); C.fx('coins', i); C.msg('Wish granted!', 'The fountain gives ' + C.nm(i) + ' 6 coins!', '#3ff0ff'); } else C.fx('splash', i); break; }
     case 'fzband': { if (p.a !== 1 || F.band > F.t) break; F.band = F.t + 24; C.msg('\uD83C\uDFBA Mariachi time!', C.nm(i) + ' requested a song from Mariachi Grok!', '#ffd23f'); break; }
-    case 'fzbuild': { if (p.a !== 3 || F.castleRe > 0 || !near(A.castle.x, A.castle.z, 3)) break; const k = 'b' + i; if ((F[k] || -9) > F.t - 0.35) break; F[k] = F.t; F.castle++; C.fx('pop', i);
+    case 'fzbuild': { if (p.a !== 3 || F.castleRe > 0 || !near(A.castle.x, A.castle.z, 3)) break; const k = 'b' + i; if ((F[k] || -9) > F.t - 0.2) break; F[k] = F.t; F.castle++; C.fx('pop', i);
       if (F.castle >= 6) { F.castleRe = GP.FAST ? 4 : 25; C.addCoins(i, 4); F.castleBy = { id: ++F.uid, i }; C.fx('star', -1); C.msg('\uD83C\uDFF0 Sandcastle complete!', C.nm(i) + ' put the flag on top! +4 coins', '#ffd23f'); }
       break; }
   }
@@ -288,7 +288,7 @@ function myBuff(S) { const p = myP(S); return p && p.bf && p.bf.u > S.fz.t ? p.b
 function moveMe(S, dt) {
   const m = FZ.me; if (!m || C.isBot(C.GS.me)) return;
   m.emT += dt;
-  if (m.em && EMOTES[m.em] && m.emT > EMOTES[m.em][1]) m.em = '';
+  if (m.em && m.emT > emHold) m.em = '';
   if (busy() || S.fz.pend > 0) { m.mv = false; return; }
   const inp = C.localInput(); const len = Math.hypot(inp.jx, inp.jz);
   if (len > 0.15) {
