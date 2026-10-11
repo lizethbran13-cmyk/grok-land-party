@@ -16,7 +16,7 @@ const prof = { name: GP.save.name || '', color: GP.save.color || PALETTE[0] };
    ====================================================================== */
 function newSession(mode) {
   return { v: 0, phase: 'lobby', pt: 0, set: { mode: mode || 'board', board: GP.save.board || 'random', turns: GP.save.turns || 10, seats: GP.save.seats || 3, diff: GP.save.diff || 'easy' },
-    lobby: [], pl: [], fx: [], fxId: GS.fxSeen > 0 ? GS.fxSeen : 0, msg: null, choice: null, mg: null, mgq: null, mgr: null, ready: [], turn: 0, turns: 0, cur: 0, dice: 0, steps: 0, star: -1, board: null, uid: 1, lastMgs: [], frenzy: false, forced: false, path: null, mode: mode || 'board', bonus: null, final: null, gid: 0 };
+    lobby: [], pl: [], fits: {}, fx: [], fxId: GS.fxSeen > 0 ? GS.fxSeen : 0, msg: null, choice: null, mg: null, mgq: null, mgr: null, ready: [], turn: 0, turns: 0, cur: 0, dice: 0, steps: 0, star: -1, board: null, uid: 1, lastMgs: [], frenzy: false, forced: false, path: null, mode: mode || 'board', bonus: null, final: null, gid: 0 };
 }
 const S_ = () => GS.S;
 const touch = () => { GS.dirty = true; };
@@ -245,6 +245,12 @@ function hostStep(dt) { const S = S_(); if (!S) return; if (S.pt > 0) S.pt -= dt
 function hostAct(pid, m) {
   const S = S_(); if (!S || !m) return; const i = seatOf(pid), isHostMe = pid === GS.pid;
   switch (m.k) {
+    case 'fit': { if (!S.fits) S.fits = {}; const f = GP.FF ? GP.FF.clean(m.v) : null; if (f) S.fits[pid] = f; else delete S.fits[pid]; touch(); break; }
+    case 'party': { // Fiesta Fits dances / confetti cannon / party horn
+      const ok = i >= 0 && GP.FF && GP.FF.MOVES.some((x) => x.id === m.v) && ((S.mode === 'board' && BOARD_PHASES[S.phase]) || S.phase === 'final' || (S.mode === 'fiesta' && S.phase === 'roam'));
+      const now = performance.now(); GS.ffT = GS.ffT || {};
+      if (ok && !(now - (GS.ffT[i] || -9e9) < 1200)) { GS.ffT[i] = now; fx('party', i, { a: m.v }); }
+      break; }
     case 'roll': if (S.phase === 'roll' && i === S.cur && i >= 0) doRoll(); break;
     case 'choose': if (S.phase === 'choose' && S.choice && i === S.choice.who) resolveChoice(m.v); break;
     case 'ready': if ((S.phase === 'mgintro' || S.phase === 'mgres') && i >= 0) { S.ready[i] = true; touch(); } break;
@@ -276,10 +282,16 @@ function doAct(m) {
 /* ======================================================================
    Sessions & networking
    ====================================================================== */
+function pushFit() {
+  const S = S_(); if (!S || !GP.FF) return; const f = GP.FF.mine();
+  if (GS.role === 'client') { if (GS.room) GS.room.send({ t: 'act', k: 'fit', v: f }); }
+  else { if (!S.fits) S.fits = {}; if (f) S.fits[GS.pid] = f; else delete S.fits[GS.pid]; touch(); }
+}
+GP.pushFit = pushFit;
 function myLobbyEntry() { return { pid: GS.pid, name: GN.cleanName(prof.name || 'Player'), color: prof.color, host: true }; }
 function startSolo(mode) {
   leaveSession(true);
-  GS.role = 'solo'; GS.S = newSession(mode); GS.S.lobby = [myLobbyEntry()]; GS.S.set.mode = mode; GS.ui = 'game'; GS.fxSeen = GS.S.fxId;
+  GS.role = 'solo'; GS.S = newSession(mode); GS.S.lobby = [myLobbyEntry()]; GS.S.set.mode = mode; GS.ui = 'game'; GS.fxSeen = GS.S.fxId; pushFit();
 }
 function lobbyFromRoom() {
   const r = GS.room, S = S_(); if (!r || !S) return;
@@ -290,7 +302,7 @@ function hostOnline(code) {
   GS.role = 'host'; GS.connecting = true; GS.ui = 'online'; setOnlineMsg('Opening a room\u2026', true);
   const room = GS.room = GN.createRoom({ role: 'host', code: code || undefined, name: prof.name || 'Player', color: prof.color, autoCode: !code, rejoin: !!code, max: 3, pid: GS.pid });
   room.on('status', (t) => { if (GS.connecting) setOnlineMsg(t, true); });
-  room.on('open', () => { GS.connecting = false; GS.S = newSession('board'); GS.fxSeen = GS.S.fxId; lobbyFromRoom(); GS.ui = 'game'; Snd.fx('join'); });
+  room.on('open', () => { GS.connecting = false; GS.S = newSession('board'); GS.fxSeen = GS.S.fxId; pushFit(); lobbyFromRoom(); GS.ui = 'game'; Snd.fx('join'); });
   room.on('players', () => { lobbyFromRoom(); });
   room.on('join', (p) => {
     const S = S_(); if (!S) return; Snd.fx('join');
@@ -340,7 +352,7 @@ function joinOnline(code) {
 function applyState(s) {
   const first = !GS.S;
   GS.S = s; GS.connecting = false; GS.ui = 'game';
-  if (first) GS.fxSeen = s.fxId;
+  if (first) { GS.fxSeen = s.fxId; pushFit(); }
 }
 // host vanished: keep the party going locally, everyone else becomes AI
 function takeOver() {
@@ -500,10 +512,10 @@ function tokTarget(S, g, i) {
   if (m < 2) return { x: s.x, z: s.z }; const a = (k / m) * TAU + 0.6; return { x: s.x + Math.cos(a) * 0.55, z: s.z + Math.sin(a) * 0.55 };
 }
 function syncTokens(S, g, dt) {
-  const sig = S.pl.map((p) => p.name + p.color).join('|') + S.gid + S.board;
+  const sig = S.pl.map((p) => p.name + p.color + (GP.FF ? GP.FF.sig(GP.FF.fitOf(p)) : '')).join('|') + S.gid + S.board;
   if (sig !== BV.sig) {
     clearToks();
-    BV.toks = S.pl.map((p, i) => { const hero = GP.buildHero(GP.colorNum(p.color)); hero.root.scale.setScalar(0.85); const tag = GP.nameTag(p.name, p.color); const blob = GP.blob(0.45); scene.add(hero.root); scene.add(tag); scene.add(blob); const t0 = tokTarget(S, g, i); return { hero, tag, blob, sp: p.sp, x: t0.x, z: t0.z, y: 0, fx: t0.x, fz: t0.z, t: 1, dur: 0.3, arc: 0.9, f: 0 }; });
+    BV.toks = S.pl.map((p, i) => { const hero = GP.buildHero(GP.colorNum(p.color), GP.FF && GP.FF.fitOf(p)); if (GP.FF) GP.FF.tag(hero, i, GP.colorNum(p.color)); hero.root.scale.setScalar(0.85); const tag = GP.nameTag(p.name, p.color); const blob = GP.blob(0.45); scene.add(hero.root); scene.add(tag); scene.add(blob); const t0 = tokTarget(S, g, i); return { hero, tag, blob, sp: p.sp, x: t0.x, z: t0.z, y: 0, fx: t0.x, fz: t0.z, t: 1, dur: 0.3, arc: 0.9, f: 0 }; });
     BV.sig = sig;
   }
   BV.toks.forEach((t, i) => {
@@ -545,7 +557,12 @@ function renderBoard(S, dt, t) {
   const asp = innerWidth / innerHeight, ext = ud.extent;
   if (GS.map || S.phase === 'intro') { const h = ext * (asp < 1 ? 2.3 / Math.max(asp, 0.45) : 1.45); camLook.lerp(tmpV.set(0, 0, 0), GP.damp(3, dt)); camPos.lerp(tmpV.set(0, h, h * 0.42), GP.damp(3, dt)); }
   else if (S.phase === 'mgpick' || S.phase === 'mgintro' || S.phase === 'mgres' || S.phase === 'bonus') { const a = t * 0.12, d = ext * (asp < 1 ? 1.5 : 1.05); camLook.lerp(tmpV.set(0, 0, 0), GP.damp(2, dt)); camPos.lerp(tmpV.set(Math.sin(a) * d, ext * 0.75, Math.cos(a) * d), GP.damp(2, dt)); }
-  else if (tok) { const d = asp < 1 ? 11.5 : 9, h = asp < 1 ? 12.5 : 8.5; camLook.lerp(tmpV.set(tok.x, 0.8, tok.z), GP.damp(4, dt)); camPos.lerp(tmpV.set(tok.x * 0.85, h, tok.z * 0.85 + d), GP.damp(2.5, dt)); }
+  else if (tok) {
+    // Fiesta Fits: a dance / cannon / horn gets a quick close-up while nobody is moving
+    let ft = tok, near = false; if (GP.FF && (S.phase === 'roll' || S.phase === 'turn')) { const k = GP.FF.spot(); if (k != null && BV.toks[k]) { ft = BV.toks[k]; near = true; } }
+    const d = near ? (asp < 1 ? 7.5 : 5.6) : asp < 1 ? 11.5 : 9, h = near ? (asp < 1 ? 6.5 : 4.2) : asp < 1 ? 12.5 : 8.5;
+    camLook.lerp(tmpV.set(ft.x, near ? 1.2 : 0.8, ft.z), GP.damp(4, dt)); camPos.lerp(tmpV.set(ft.x * (near ? 0.95 : 0.85), h, ft.z * (near ? 0.95 : 0.85) + d), GP.damp(2.5, dt));
+  }
   camera.position.copy(camPos); camera.lookAt(camLook);
 }
 function renderMg(S, dt) {
@@ -568,7 +585,7 @@ const PD = { grp: null, sig: '' };
 function hidePodium() { if (PD.grp) scene.remove(PD.grp); PD.grp = null; PD.sig = ''; }
 function renderPodium(S, dt, t) {
   hideBoard(); MV.stop(); GS.mvUid = 0;
-  const sig = JSON.stringify(S.final) + S.gid;
+  const sig = JSON.stringify(S.final) + S.gid + (GP.FF ? S.pl.map((p) => GP.FF.sig(GP.FF.fitOf(p))).join(',') : '');
   if (PD.sig !== sig) {
     hidePodium(); PD.sig = sig; PD.grp = new THREE.Group(); scene.add(PD.grp); PD.heroes = []; PD.star = null;
     GP.setTheme({ sky: 0xffc6ea, fog: 0xffd9f0, fogNear: 30, fogFar: 90 });
@@ -578,7 +595,7 @@ function renderPodium(S, dt, t) {
       const pl = Math.min(3, r.place); used[pl] = (used[pl] || 0) + 1; const x = xs[pl] + (used[pl] - 1) * (pl === 1 ? 2.4 : 1.2) * (pl === 2 ? -1 : 1);
       const blk = GP.M(GP.G.box, cols[pl], 2.2, hs[pl], 2); blk.position.set(x, hs[pl] / 2, 0); PD.grp.add(GP.shadowy(blk, true, true));
       const num = new THREE.Sprite(new THREE.SpriteMaterial({ map: GP.textTex(String(r.place), null, '#1b1440', 90), transparent: true })); num.scale.setScalar(1.1); num.position.set(x, hs[pl] * 0.5, 1.2); PD.grp.add(num);
-      const h = GP.buildHero(GP.colorNum(S.pl[r.i].color)); h.root.position.set(x, hs[pl], 0); PD.grp.add(h.root);
+      const h = GP.buildHero(GP.colorNum(S.pl[r.i].color), GP.FF && GP.FF.fitOf(S.pl[r.i])); if (GP.FF) GP.FF.tag(h, r.i, GP.colorNum(S.pl[r.i].color)); h.root.position.set(x, hs[pl], 0); PD.grp.add(h.root);
       const tag = GP.nameTag(S.pl[r.i].name, S.pl[r.i].color); tag.position.set(x, hs[pl] + 2.3, 0); PD.grp.add(tag);
       PD.heroes.push({ h, place: r.place });
       if (r.place === 1 && !PD.star) { const st = GP.buildStar(0.8); st.position.set(x, hs[pl] + 3.3, 0); PD.grp.add(st); PD.star = st; }
@@ -588,8 +605,8 @@ function renderPodium(S, dt, t) {
   PD.heroes.forEach((q) => GP.poseHero(q.h, q.place === 1 ? 'win' : q.place === 2 ? 'idle' : 'sad', dt));
   if (PD.star) PD.star.rotation.y = t * 2;
   PD.conf.forEach((m, i) => { m.position.y -= dt * (1.5 + (i % 5) * 0.3); m.rotation.x += dt * 3; m.rotation.y += dt * 2; if (m.position.y < 0) m.position.y = 12; });
-  const asp = innerWidth / innerHeight, d = asp < 1 ? 15 : 9.5;
-  camLook.set(0, asp < 1 ? 4.6 : 1.0, 0); camPos.set(0, asp < 1 ? 6.5 : 4.2, d); camera.position.copy(camPos); camera.lookAt(camLook);
+  const asp = innerWidth / innerHeight, pc = GP.podCam || { d: 13.5, ly: -0.4, cy: 3.4 }, d = asp < 1 ? pc.d : 9.5;
+  camLook.set(0, asp < 1 ? pc.ly : 1.0, 0); camPos.set(0, asp < 1 ? pc.cy : 4.2, d); camera.position.copy(camPos); camera.lookAt(camLook); // portrait: podium sits above the results card
 }
 function renderBackdrop(dt, t, boardId) {
   MV.stop(); GS.mvUid = 0; hidePodium();
@@ -606,6 +623,7 @@ function playFx(S) {
   if (S.fxId < GS.fxSeen) GS.fxSeen = S.fxId;
   S.fx.forEach((e) => {
     if (e.id <= GS.fxSeen) return; GS.fxSeen = e.id;
+    if (e.k === 'party') { if (GP.FF) GP.FF.start(e.i, e.a); return; }
     if (e.k === 'coin') { if (S.mode === 'board' && BOARD_PHASES[S.phase]) { floatOver(e.i, (e.n > 0 ? '+' : '') + e.n, e.n > 0 ? '#ffe14d' : '#ff6b86'); } return; }
     if (e.k === 'star' && e.i >= 0) floatOver(e.i, '+1 \u2605', '#ffd23f');
     if ((e.k === 'wrong' || e.k === 'right') && e.i >= 0 && e.i !== GS.me) return;
@@ -665,7 +683,7 @@ function lobbyHTML(S) {
 }
 function lobbyPlayersHTML(S) {
   const L = S.lobby.slice(0, 3), seats = Math.max(L.length, S.set.seats);
-  let h = L.map((p) => '<div class="pchip" style="--c:' + p.color + '"><i></i>' + esc(p.name) + (p.host && GS.role !== 'solo' ? ' (host)' : '') + (p.pid === GS.pid ? ' \u2022 you' : '') + '</div>').join('');
+  let h = L.map((p) => '<div class="pchip" style="--c:' + p.color + '"><i></i>' + (GP.FF ? GP.FF.chip(S.fits && S.fits[p.pid]) : '') + esc(p.name) + (p.host && GS.role !== 'solo' ? ' (host)' : '') + (p.pid === GS.pid ? ' \u2022 you' : '') + '</div>').join('');
   for (let k = L.length; k < seats; k++) h += '<div class="pchip ai" style="--c:#9a8ac0"><i></i>AI ' + esc(BOT_NAMES[k - L.length]) + '</div>';
   return h;
 }
@@ -824,6 +842,7 @@ function frame(now) {
       else if (S.mode === 'board' && S.board && S.phase !== 'lobby' && S.phase !== 'fpick') { renderBoard(S, dt, clock); Snd.play(GP.boardById(S.board).song); }
       else { renderBackdrop(dt, clock, S.set.mode === 'board' && S.set.board !== 'random' ? S.set.board : 'candy'); Snd.play('title'); }
     } else { renderBackdrop(dt, clock, 'candy'); Snd.play('title'); }
+    if (GP.FF) GP.FF.tick(dt);
     uiSync();
   } catch (e) { console.error(e); }
   GP.renderer.render(scene, camera);
@@ -841,6 +860,7 @@ requestAnimationFrame(frame);
 if (GP.FZ) GP.FZ.bind({ GS, S_, setPhase, msg, fx, addCoins, isBot, seatOf, nm, touch, chooseSolo, eligible, toIntro, localInput, toast, doAct, show, setHTML, leaveSession, startSolo, MV, camera, scene, prof, keys, isClient: () => GS.role === 'client', pressA: () => { pendingA = true; } });
 
 /* test / debug hooks */
+GP.FFbind = { GS, S_, doAct, toast, BOARD_PHASES };
 window.__party = {
   get S() { return GS.S; }, GS, act: doAct, me: () => GS.me,
   setAuto(on) { GS.auto = !!on; },

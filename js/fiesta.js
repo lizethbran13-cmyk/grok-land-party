@@ -446,11 +446,11 @@ let ft = 0, camP = new THREE.Vector3(), camL = new THREE.Vector3(), camInit = fa
 const v3 = new THREE.Vector3();
 FZ.song = () => { if (dance) return 'dance'; const S = C.S_(); return FZ.me && FZ.me.a === 1 && S && S.fz && S.fz.band > S.fz.t ? 'mariachi' : 'fiesta'; };
 function buildAvatars(S) {
-  const sig = S.gid + '|' + S.pl.map((p) => p.color).join(',');
+  const sig = S.gid + '|' + S.pl.map((p) => p.color + (GP.FF ? GP.FF.sig(GP.FF.fitOf(p)) : '')).join(',');
   if (sig === avSig) return; avSig = sig;
   avs.forEach((a) => a.h.root.parent && a.h.root.parent.remove(a.h.root)); avs = [];
   S.pl.forEach((p, i) => {
-    const h = GP.buildHero(GP.colorNum(p.color)), tag = GP.nameTag(p.name + (p.bot ? ' (CPU)' : ''), p.color); tag.position.y = 2.35; h.root.add(tag);
+    const h = GP.buildHero(GP.colorNum(p.color), GP.FF && GP.FF.fitOf(p)); if (GP.FF) GP.FF.tag(h, i, GP.colorNum(p.color)); const tag = GP.nameTag(p.name + (p.bot ? ' (CPU)' : ''), p.color); tag.position.y = 2.35; h.root.add(tag);
     const gs = W.sombrero(0, true); gs.position.y = 0.3; gs.scale.setScalar(0.8); gs.visible = false; h.headG.add(gs);
     const food = new THREE.Group(); food.position.set(0, -0.48, 0.12); h.armR.add(food);
     const ring = new THREE.Mesh(GP.G.ring, GP.basic(GP.colorNum(p.color), { transparent: true, opacity: 0.8 })); ring.scale.setScalar(0.62); ring.position.y = 0.03; h.root.add(ring);

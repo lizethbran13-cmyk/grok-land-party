@@ -433,7 +433,7 @@ def({ id: 'cannon', name: 'Cannon Chaos', type: '1v2', ctrl: 'move', aLabel: 'FI
   hideAvatar: (mg, i) => i === mg.solo,
   build(V, mg) {
     const tw = new THREE.Group(); const base = M(G.cyl8, 0x7a6a8a, 1.3, 2.6, 1.3); base.position.y = 1.3; tw.add(base); const can = M(G.cyl8, 0x2a2344, 0.45, 2, 0.45); can.rotation.x = Math.PI / 2 - 0.6; can.position.set(0, 3, 0.6); tw.add(can);
-    const hero = GP.buildHero(GP.colorNum(V.color(mg.solo))); hero.root.position.set(0, 2.6, -0.6); tw.add(hero.root); tw.position.set(0, 0, -7); V.grp.add(GP.shadowy(tw, true, false));
+    const hero = GP.buildHero(GP.colorNum(V.color(mg.solo)), GP.FF && GP.FF.fitSeat(mg.solo)); hero.root.position.set(0, 2.6, -0.6); tw.add(hero.root); tw.position.set(0, 0, -7); V.grp.add(GP.shadowy(tw, true, false));
     const tag = GP.nameTag(V.name(mg.solo), V.color(mg.solo)); tag.position.set(0, 5.4, -7); V.grp.add(tag);
     const ret = new THREE.Group(); const ring = new THREE.Mesh(G.ring, new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: 0.95, depthWrite: false })); ring.scale.setScalar(1.35); ret.add(ring);
     const dot = new THREE.Mesh(G.circle, new THREE.MeshBasicMaterial({ color: 0xff2a2a, transparent: true, opacity: 0.35, depthWrite: false })); dot.scale.setScalar(1.35); ret.add(dot); ret.position.y = 0.07; V.grp.add(ret);
@@ -491,7 +491,7 @@ GP.MGView = function (scene) {
     const below = new THREE.Mesh(G.plane, mat(D.below || 0x3a8ad8, { emissive: 0x112244 })); below.scale.set(300, 1, 300); below.position.y = A && A.fall ? -1.2 : -1.6; V.grp.add(below);
     for (let i = 0; i < 10; i++) { const c = GP.buildCloud(1 + Math.random()); const a = (i / 10) * TAU; c.position.set(Math.cos(a) * 30, -1 + Math.random() * 4, Math.sin(a) * 26); V.grp.add(c); }
     V.heroes = mg.p.map((p, i) => {
-      const h = GP.buildHero(GP.colorNum(V.color(i))); V.grp.add(h.root); const tag = GP.nameTag(V.name(i), V.color(i)); V.grp.add(tag); const bl = GP.blob(0.5); V.grp.add(bl);
+      const h = GP.buildHero(GP.colorNum(V.color(i)), GP.FF && GP.FF.fitSeat(i)); V.grp.add(h.root); const tag = GP.nameTag(V.name(i), V.color(i)); V.grp.add(tag); const bl = GP.blob(0.5); V.grp.add(bl);
       const ring = new THREE.Mesh(G.ring, new THREE.MeshBasicMaterial({ color: GP.colorNum(V.color(i)), transparent: true, opacity: 0.9, depthWrite: false })); ring.scale.setScalar(0.62); V.grp.add(ring);
       return Object.assign(h, { tag, bl, ring, rx: p.x, ry: p.y || 0, rz: p.z, rf: p.f || 0, lx: p.x, lz: p.z });
     });

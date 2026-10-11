@@ -175,7 +175,8 @@ GP.blob = function (r, op) { const m = new THREE.Mesh(G.circle, new THREE.MeshBa
 GP.glowSprite = function (color, s) { const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: GP.TEX.glow, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); sp.scale.setScalar(s || 2); return sp; };
 
 /* ---------------- models (Grok Land style) ---------------- */
-GP.buildHero = function (color) {
+GP.buildHero = function (color, fit) {
+  if (fit && GP.FF && GP.FF.ready) { const ff = GP.FF.build(color, fit); if (ff) return ff; }
   const root = new THREE.Group(), body = new THREE.Group(); root.add(body);
   const RED = color || 0xff3b3b, BLUE = 0x2f6fe8, SKIN = 0xffc996, WHITE = 0xffffff, BOOT = 0x6b3b1f, DARK = 0x1b1440;
   const torso = M(G.cyl8, BLUE, 0.4, 0.55, 0.36); torso.position.y = 0.72; body.add(torso);
@@ -193,7 +194,7 @@ GP.buildHero = function (color) {
   const hair = M(G.sphereLo, 0x5a3212, 0.2, 0.12, 0.2); hair.position.set(0, -0.02, -0.28); headG.add(hair);
   const mkArm = (side) => { const g = new THREE.Group(); g.position.set(0.44 * side, 0.98, 0); const a = M(G.cyl8, RED, 0.09, 0.4, 0.09); a.position.y = -0.18; g.add(a); const hand = M(G.sphereLo, WHITE, 0.13); hand.position.y = -0.42; g.add(hand); body.add(g); return g; };
   const mkLeg = (side) => { const g = new THREE.Group(); g.position.set(0.18 * side, 0.42, 0); const l = M(G.cyl8, BLUE, 0.11, 0.3, 0.11); l.position.y = -0.14; g.add(l); const boot = M(G.sphereLo, BOOT, 0.15, 0.11, 0.21); boot.position.set(0, -0.32, 0.05); g.add(boot); body.add(g); return g; };
-  const h = { root, body, headG, armL: mkArm(-1), armR: mkArm(1), legL: mkLeg(-1), legR: mkLeg(1), t: Math.random() * 10 };
+  const h = { root, body, headG, armL: mkArm(-1), armR: mkArm(1), legL: mkLeg(-1), legR: mkLeg(1), t: Math.random() * 10, cap: [cap, visor, emblem] };
   shadowy(root, true, false);
   return h;
 };
