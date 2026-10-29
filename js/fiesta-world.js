@@ -304,6 +304,221 @@ W.sky = function () {
   return m;
 };
 
+/* ---------- Issue #82: Cobblestone streets, Grand Stone Shops, Pets & Hazards ---------- */
+W.stoneRoad = function (grp, x0, z0, x1, z1, width, r) {
+  const dx = x1 - x0, dz = z1 - z0, len = Math.hypot(dx, dz), ang = Math.atan2(dx, dz);
+  const g = new THREE.Group();
+  const base = M(G.box, 0x8d8276, width, 0.05, len);
+  base.position.set(0, 0.02, len / 2);
+  g.add(GP.shadowy(base, false, true));
+  const curbL = M(G.box, 0x6e6459, 0.22, 0.12, len); curbL.position.set(-width / 2 - 0.1, 0.06, len / 2); g.add(curbL);
+  const curbR = M(G.box, 0x6e6459, 0.22, 0.12, len); curbR.position.set(width / 2 + 0.1, 0.06, len / 2); g.add(curbR);
+  const stones = [0xa89b8c, 0x948778, 0xb8aa9a, 0x7c7166];
+  const n = Math.floor(len * width * 0.95);
+  for (let i = 0; i < n; i++) {
+    const s = M(G.cyl8, stones[i % 4], 0.26 + (r ? r() * 0.16 : 0.08), 0.06, 0.26 + (r ? r() * 0.16 : 0.08));
+    s.position.set(((r ? r() : (i * 0.37) % 1) - 0.5) * (width - 0.5), 0.035, ((r ? r() : (i * 0.61) % 1)) * (len - 0.4) + 0.2);
+    g.add(s);
+  }
+  g.position.set(x0, 0, z0);
+  g.rotation.y = ang;
+  grp.add(g);
+  return g;
+};
+
+W.stonePlaza = function (grp, x, z, rad, r) {
+  const base = M(G.cyl20, 0x96897b, rad, 0.06, rad); base.position.set(x, 0.02, z); grp.add(GP.shadowy(base, false, true));
+  const ring = M(G.torus, 0x6e6459, rad, rad, 0.3); ring.rotation.x = Math.PI / 2; ring.position.set(x, 0.05, z); grp.add(ring);
+  const inner = M(G.cyl20, 0xb8a48c, rad * 0.55, 0.07, rad * 0.55); inner.position.set(x, 0.03, z); grp.add(inner);
+  const stones = [0xa89b8c, 0x8a7d70, 0xc2b29f, 0x7a6e62];
+  for (let i = 0; i < 48; i++) {
+    const a = (i / 48) * TAU + (r ? r() * 0.1 : 0), d = (0.25 + ((i * 0.29) % 0.68)) * rad;
+    const s = M(G.cyl8, stones[i % 4], 0.35, 0.065, 0.35);
+    s.position.set(x + Math.cos(a) * d, 0.035, z + Math.sin(a) * d);
+    grp.add(s);
+  }
+};
+
+W.stoneShop = function (label, awningCol, wallCol, w, h, d) {
+  w = w || 4.8; h = h || 3.8; d = d || 3.4;
+  const g = new THREE.Group();
+  // Carved stone base + masonry walls
+  const plinth = M(G.box, 0x6e655c, w + 0.3, 0.45, d + 0.3); plinth.position.y = 0.22; g.add(plinth);
+  const body = M(G.box, wallCol || 0xd8ccb8, w, h, d); body.position.y = h / 2 + 0.3; g.add(body);
+  // Stone corner quoins
+  const qM = mat(0x7c7267);
+  [-w / 2, w / 2].forEach((qx) => [-d / 2, d / 2].forEach((qz) => {
+    for (let y = 0.5; y < h; y += 0.65) {
+      const qb = M(G.box, qM, 0.36, 0.38, 0.36); qb.position.set(qx, y, qz); g.add(qb);
+    }
+  }));
+  // Stone cornice + terracotta parapet roof
+  const corn = M(G.box, 0x7a7066, w + 0.35, 0.26, d + 0.35); corn.position.y = h + 0.35; g.add(corn);
+  const roof = M(G.box, 0xb85236, w + 0.15, 0.32, d + 0.15); roof.position.y = h + 0.62; g.add(roof);
+  // Arched stone doorway + display window + wooden counter
+  const arch = M(G.cyl, 0x3b2618, 0.72, 0.12, 0.72); arch.rotation.x = Math.PI / 2; arch.position.set(-0.85, 1.55, d / 2 + 0.02); g.add(arch);
+  const door = M(G.box, 0x4d311e, 1.44, 1.55, 0.1); door.position.set(-0.85, 0.78, d / 2 + 0.02); g.add(door);
+  const win = M(G.box, basic(0xfff2b2), 1.6, 1.1, 0.1); win.position.set(1.05, 1.65, d / 2 + 0.02); g.add(win);
+  const counter = M(G.box, 0x7c4e29, 1.8, 0.85, 0.75); counter.position.set(1.05, 0.55, d / 2 + 0.38); g.add(counter);
+  // Striped fiesta awning
+  for (let i = 0; i < 6; i++) {
+    const st = M(G.box, i % 2 ? 0xffffff : awningCol, (w - 0.2) / 6, 0.14, 1.25);
+    st.position.set(-w / 2 + 0.1 + (i + 0.5) * ((w - 0.2) / 6), 2.55, d / 2 + 0.55);
+    st.rotation.x = 0.24; g.add(st);
+  }
+  // Overhead shop signboard
+  const sb = signBox(label, w * 0.88, 0.72, '#231738', '#ffe478', 0.16);
+  sb.position.set(0, h + 1.05, d / 2 + 0.1); g.add(sb);
+  const lantern = M(G.sphereLo, basic(0xffe999), 0.18); lantern.position.set(0, 2.35, d / 2 + 0.9); g.add(lantern);
+  GP.shadowy(g, true, true);
+  return g;
+};
+
+W.clockTower = function () {
+  const g = new THREE.Group();
+  const base = M(G.box, 0x8a7f72, 4.6, 1.2, 4.6); base.position.y = 0.6; g.add(base);
+  const shaft = M(G.box, 0xd8c8b0, 3.6, 6.5, 3.6); shaft.position.y = 4.4; g.add(shaft);
+  const belfry = M(G.box, 0xc8b49a, 3.9, 2.2, 3.9); belfry.position.y = 8.6; g.add(belfry);
+  const dome = M(G.sphere, 0xd85a3a, 1.9, 1.6, 1.9); dome.position.y = 9.8; g.add(dome);
+  const spire = M(G.cone, 0xffd23f, 0.35, 1.4, 0.35); spire.position.y = 11.4; g.add(spire);
+  // Clock faces
+  [[0, 1.85, 0], [0, -1.85, Math.PI], [1.85, 0, Math.PI / 2], [-1.85, 0, -Math.PI / 2]].forEach((p) => {
+    const face = M(G.cyl, basic(0xfff8dc), 0.85, 0.08, 0.85);
+    face.rotation.x = Math.PI / 2; face.rotation.z = p[2];
+    face.position.set(p[0], 6.4, p[1]); g.add(face);
+  });
+  const sb = signBox('GRAN PUEBLO VIEJO', 4.2, 0.7, '#2a1548', '#ffd23f', 0.16);
+  sb.position.set(0, 2.8, 1.9); g.add(sb);
+  GP.shadowy(g, true, true);
+  return g;
+};
+
+/* ---------- All 5 Pets in 3D: Luna, Pi-rat, Snowie, Candy, Torty (Martina) ---------- */
+W.pet = function (id) {
+  const g = new THREE.Group(), root = new THREE.Group(); g.add(root);
+  const pillow = M(G.cyl20, 0x9b5de5, 0.85, 0.16, 0.85); pillow.position.y = 0.08; g.add(pillow);
+  const rim = M(G.torus, 0xffd23f, 0.85, 0.85, 0.08); rim.rotation.x = Math.PI / 2; rim.position.y = 0.14; g.add(rim);
+  if (id === 'luna') {
+    // Luna: Grey Fancy Rat with round pink ears, tapered snout, pink nose & long rat tail
+    const body = M(G.sphere, 0x7a8090, 0.34, 0.29, 0.44); body.position.set(0, 0.36, -0.02); root.add(body);
+    const head = M(G.sphere, 0x868d9e, 0.25, 0.23, 0.31); head.position.set(0, 0.62, 0.24); root.add(head);
+    const snout = M(G.cone, 0x868d9e, 0.14, 0.2, 0.14); snout.rotation.x = Math.PI / 2; snout.position.set(0, 0.59, 0.5); root.add(snout);
+    const nose = M(G.sphereLo, 0xff9ab8, 0.048); nose.position.set(0, 0.6, 0.6); root.add(nose);
+    [-0.19, 0.19].forEach((x) => {
+      const ear = M(G.cyl, 0x868d9e, 0.14, 0.035, 0.14); ear.rotation.x = Math.PI / 2; ear.position.set(x, 0.79, 0.16); root.add(ear);
+      const inner = M(G.cyl, 0xffb3c8, 0.095, 0.04, 0.095); inner.rotation.x = Math.PI / 2; inner.position.set(x, 0.79, 0.17); root.add(inner);
+    });
+    [-0.09, 0.09].forEach((x) => { const eye = M(G.sphereLo, 0x181824, 0.044); eye.position.set(x, 0.65, 0.45); root.add(eye); });
+    const collar = M(G.torus, 0x9b5de5, 0.21, 0.21, 0.04); collar.rotation.x = Math.PI / 2; collar.position.set(0, 0.48, 0.18); root.add(collar);
+    const moon = M(G.sphereLo, basic(0xffd23f), 0.065); moon.position.set(0, 0.44, 0.38); root.add(moon);
+    const tail = M(G.cyl8, 0xe8a5b8, 0.042, 0.52, 0.03); tail.position.set(0, 0.36, -0.46); tail.rotation.x = -1.1; root.add(tail);
+  } else if (id === 'pirat') {
+    // Pi-rat: One-Eyed Brown Fancy Rat with pirate eye patch, round ears, pirate hat & rat tail
+    const body = M(G.sphere, 0x7c5236, 0.34, 0.3, 0.44); body.position.set(0, 0.37, -0.02); root.add(body);
+    const head = M(G.sphere, 0x8d5f40, 0.25, 0.23, 0.31); head.position.set(0, 0.63, 0.24); root.add(head);
+    const snout = M(G.cone, 0x8d5f40, 0.14, 0.2, 0.14); snout.rotation.x = Math.PI / 2; snout.position.set(0, 0.6, 0.5); root.add(snout);
+    const nose = M(G.sphereLo, 0xff9ab8, 0.048); nose.position.set(0, 0.61, 0.6); root.add(nose);
+    [-0.19, 0.19].forEach((x) => {
+      const ear = M(G.cyl, 0x7c5236, 0.14, 0.035, 0.14); ear.rotation.x = Math.PI / 2; ear.position.set(x, 0.79, 0.16); root.add(ear);
+      const inner = M(G.cyl, 0xffb3c8, 0.095, 0.04, 0.095); inner.rotation.x = Math.PI / 2; inner.position.set(x, 0.79, 0.17); root.add(inner);
+    });
+    const eye = M(G.sphereLo, 0x111111, 0.045); eye.position.set(-0.09, 0.66, 0.46); root.add(eye);
+    const patch = M(G.sphereLo, 0x111111, 0.068); patch.position.set(0.09, 0.66, 0.46); root.add(patch);
+    const strap = M(G.torus, 0x111111, 0.25, 0.25, 0.025); strap.rotation.y = 0.35; strap.position.set(0, 0.66, 0.24); root.add(strap);
+    const hat = M(G.cone, 0x23192d, 0.32, 0.22, 0.32); hat.position.set(0, 0.9, 0.2); root.add(hat);
+    const trim = M(G.torus, 0xffd23f, 0.28, 0.28, 0.04); trim.rotation.x = Math.PI / 2; trim.position.set(0, 0.8, 0.2); root.add(trim);
+    const tail = M(G.cyl8, 0xd89aa8, 0.042, 0.52, 0.03); tail.position.set(0, 0.36, -0.46); tail.rotation.x = -1.1; root.add(tail);
+  } else if (id === 'snowie') {
+    // Snowie: Pure White Fancy Rat with pink inner ears, pink nose, long tail & frosty cyan scarf
+    const body = M(G.sphere, 0xfafcff, 0.34, 0.29, 0.44); body.position.set(0, 0.36, -0.02); root.add(body);
+    const head = M(G.sphere, 0xffffff, 0.25, 0.23, 0.31); head.position.set(0, 0.62, 0.24); root.add(head);
+    const snout = M(G.cone, 0xffffff, 0.14, 0.2, 0.14); snout.rotation.x = Math.PI / 2; snout.position.set(0, 0.59, 0.5); root.add(snout);
+    const nose = M(G.sphereLo, 0xff9ab8, 0.048); nose.position.set(0, 0.6, 0.6); root.add(nose);
+    [-0.19, 0.19].forEach((x) => {
+      const ear = M(G.cyl, 0xffffff, 0.14, 0.035, 0.14); ear.rotation.x = Math.PI / 2; ear.position.set(x, 0.79, 0.16); root.add(ear);
+      const inner = M(G.cyl, 0xffbfd4, 0.095, 0.04, 0.095); inner.rotation.x = Math.PI / 2; inner.position.set(x, 0.79, 0.17); root.add(inner);
+    });
+    [-0.09, 0.09].forEach((x) => { const eye = M(G.sphereLo, 0xc92a52, 0.044); eye.position.set(x, 0.65, 0.45); root.add(eye); });
+    const scarf = M(G.torus, 0x3ff0ff, 0.22, 0.22, 0.05); scarf.rotation.x = Math.PI / 2; scarf.position.set(0, 0.49, 0.18); root.add(scarf);
+    const tail = M(G.cyl8, 0xffccd8, 0.042, 0.52, 0.03); tail.position.set(0, 0.36, -0.46); tail.rotation.x = -1.1; root.add(tail);
+  } else if (id === 'candy') {
+    // Candy: Miniature Schnauzer (salt-and-pepper grey dog with white bushy schnauzer beard & eyebrows, folded ears)
+    const body = M(G.sphere, 0x767c86, 0.36, 0.31, 0.46); body.position.set(0, 0.4, -0.02); root.add(body);
+    [[-0.18, 0.2], [0.18, 0.2], [-0.18, -0.2], [0.18, -0.2]].forEach((p) => {
+      const leg = M(G.cyl8, 0xd8dee8, 0.075, 0.26, 0.075); leg.position.set(p[0], 0.22, p[1]); root.add(leg);
+    });
+    const head = M(G.box, 0x828894, 0.36, 0.32, 0.36); head.position.set(0, 0.68, 0.24); root.add(head);
+    // Bushy white schnauzer beard & muzzle
+    const muzzle = M(G.box, 0xf2f5fa, 0.28, 0.22, 0.24); muzzle.position.set(0, 0.58, 0.44); root.add(muzzle);
+    const beard = M(G.box, 0xffffff, 0.26, 0.18, 0.16); beard.position.set(0, 0.44, 0.45); root.add(beard);
+    // Bushy white schnauzer eyebrows
+    [-0.1, 0.1].forEach((x) => {
+      const brow = M(G.box, 0xffffff, 0.12, 0.05, 0.08); brow.position.set(x, 0.78, 0.42); brow.rotation.z = x < 0 ? 0.2 : -0.2; root.add(brow);
+      const eye = M(G.sphereLo, 0x1a1412, 0.044); eye.position.set(x, 0.71, 0.43); root.add(eye);
+    });
+    const nose = M(G.sphereLo, 0x18181c, 0.055); nose.position.set(0, 0.66, 0.56); root.add(nose);
+    // Folded V-shaped schnauzer ears
+    [-0.19, 0.19].forEach((x) => {
+      const ear = M(G.box, 0x565b64, 0.1, 0.2, 0.14); ear.position.set(x, 0.78, 0.2); ear.rotation.z = x < 0 ? 0.35 : -0.35; root.add(ear);
+    });
+    const collar = M(G.torus, 0xff4fd8, 0.23, 0.23, 0.045); collar.rotation.x = Math.PI / 2; collar.position.set(0, 0.51, 0.2); root.add(collar);
+    const tail = M(G.cyl8, 0x767c86, 0.05, 0.22, 0.05); tail.position.set(0, 0.58, -0.38); tail.rotation.x = -0.45; root.add(tail);
+  } else {
+    // Torty (Martina): Desert Tortoise with domed tan/olive desert scute carapace & sturdy tortoise legs
+    const shell = M(G.sphere, 0x8c6d46, 0.44, 0.32, 0.48); shell.position.set(0, 0.39, -0.02); root.add(shell);
+    const scute = M(G.cyl8, 0x6e5332, 0.3, 0.18, 0.34); scute.position.set(0, 0.54, -0.02); root.add(scute);
+    const rimS = M(G.torus, 0xb59264, 0.42, 0.42, 0.055); rimS.rotation.x = Math.PI / 2; rimS.position.set(0, 0.27, -0.02); root.add(rimS);
+    [[-0.26, 0.22], [0.26, 0.22], [-0.26, -0.22], [0.26, -0.22]].forEach((p) => {
+      const leg = M(G.cyl8, 0x788254, 0.085, 0.2, 0.085); leg.position.set(p[0], 0.2, p[1]); root.add(leg);
+    });
+    const head = M(G.sphere, 0x788254, 0.2, 0.18, 0.24); head.position.set(0, 0.46, 0.42); root.add(head);
+    [-0.08, 0.08].forEach((x) => { const eye = M(G.sphereLo, 0x1a1812, 0.038); eye.position.set(x, 0.5, 0.6); root.add(eye); });
+    const badge = M(G.sphereLo, basic(0xffd23f), 0.07); badge.position.set(0, 0.62, 0.18); root.add(badge);
+  }
+  const petLabels = {
+    luna: '🐀 Luna · Grey Fancy Rat',
+    pirat: '🏴‍☠️ Pi-rat · One-Eyed Pirate Rat',
+    snowie: '🐁 Snowie · White Fancy Rat',
+    candy: '🐶 Candy · Mini Schnauzer',
+    torty: '🐢 Torty · Desert Tortoise'
+  };
+  if (GP.nameTag && petLabels[id]) {
+    const tag = GP.nameTag(petLabels[id], '#ffe14d');
+    tag.position.y = 1.45;
+    tag.scale.multiplyScalar(0.82);
+    g.add(tag);
+  }
+  GP.shadowy(g, true, false);
+  g.userData.root = root;
+  return g;
+};
+
+/* ---------- Fiesta Hazards (Spicy Chili Carts & Pinching Beach Crabs) ---------- */
+W.chiliCart = function () {
+  const g = new THREE.Group();
+  const body = M(G.box, 0xff2a2a, 1.3, 0.55, 0.85); body.position.y = 0.55; g.add(body);
+  const stripe = M(G.box, 0xffd23f, 1.34, 0.14, 0.88); stripe.position.y = 0.58; g.add(stripe);
+  const chili = M(G.cone, 0xff4d00, 0.28, 0.9, 0.28); chili.rotation.z = Math.PI / 2; chili.position.set(0, 1.0, 0); g.add(chili);
+  const glow = GP.glowSprite(0xff4d00, 2.2); glow.position.y = 0.9; g.add(glow);
+  [-0.45, 0.45].forEach((x) => [-0.42, 0.42].forEach((z) => {
+    const wh = M(G.cyl, 0x222222, 0.24, 0.1, 0.24); wh.rotation.x = Math.PI / 2; wh.position.set(x, 0.24, z); g.add(wh);
+  }));
+  GP.shadowy(g, true, false);
+  return g;
+};
+
+W.crab = function () {
+  const g = new THREE.Group();
+  const body = M(G.sphere, 0xff3b30, 0.45, 0.24, 0.36); body.position.y = 0.26; g.add(body);
+  [-0.16, 0.16].forEach((x) => {
+    const stalk = M(G.cyl8, 0xff3b30, 0.04, 0.18, 0.04); stalk.position.set(x, 0.45, 0.18); g.add(stalk);
+    const eye = M(G.sphereLo, 0x111111, 0.055); eye.position.set(x, 0.55, 0.2); g.add(eye);
+    const claw = M(G.sphere, 0xff5e3a, 0.18, 0.12, 0.24); claw.position.set(x * 2.4, 0.3, 0.28); g.add(claw);
+  });
+  GP.shadowy(g, true, false);
+  return g;
+};
+
 /* ======================================================================
    THE AREAS. Each returns { grp, col:[{x,z,r}], anims:[], ...named parts }
    ====================================================================== */
@@ -319,13 +534,14 @@ function treeRing(A, r, n, xs, zs, make, keepOut) {
   }
 }
 const AREAS = W.AREAS = [
-  { id: 'isle', name: 'Fiesta Isles', icon: '\uD83C\uDFDD\uFE0F', spawn: [0, 12], ell: [28, 23], theme: { fog: 0xffc8a8, fogNear: 45, fogFar: 140, hemiSky: 0xfff4e0, hemiGround: 0x8ab06a, hemiI: 0.9, sunI: 1.05, sunC: 0xffe6c0 } },
-  { id: 'plaza', name: 'Pi\u00f1ata Plaza', icon: '\uD83E\uDE85', spawn: [0, 10], box: [16, 13], theme: { fog: 0xff9ac8, fogNear: 40, fogFar: 110, hemiSky: 0xffe0f0, hemiGround: 0x9a6a8a, hemiI: 0.85, sunI: 0.95, sunC: 0xffd0b0 } },
-  { id: 'taco', name: 'Taco Pueblo', icon: '\uD83C\uDF2E', spawn: [0, 10], box: [16, 13], theme: { fog: 0xffc890, fogNear: 40, fogFar: 110, hemiSky: 0xfff0d0, hemiGround: 0xb08a5a, hemiI: 0.9, sunI: 1.0, sunC: 0xffe0b0 } },
-  { id: 'bay', name: 'Maraca Bay', icon: '\uD83C\uDFD6\uFE0F', spawn: [0, 10], box: [16, 13], theme: { fog: 0xb8e8ff, fogNear: 45, fogFar: 130, hemiSky: 0xfff4e8, hemiGround: 0xb89a6a, hemiI: 0.72, sunI: 0.85, sunC: 0xffe8c8 } },
+  { id: 'isle', name: 'Fiesta Isles', icon: '\uD83C\uDFDD\uFE0F', spawn: [0, 11], ell: [30, 25], theme: { fog: 0xffc8a8, fogNear: 45, fogFar: 145, hemiSky: 0xfff4e0, hemiGround: 0x8ab06a, hemiI: 0.92, sunI: 1.05, sunC: 0xffe6c0 } },
+  { id: 'plaza', name: 'Pi\u00f1ata Plaza', icon: '\uD83E\uDE85', spawn: [0, 10], box: [17, 13.5], theme: { fog: 0xff9ac8, fogNear: 40, fogFar: 115, hemiSky: 0xffe0f0, hemiGround: 0x9a6a8a, hemiI: 0.88, sunI: 0.98, sunC: 0xffd0b0 } },
+  { id: 'taco', name: 'Taco Pueblo', icon: '\uD83C\uDF2E', spawn: [0, 10], box: [17, 13.5], theme: { fog: 0xffc890, fogNear: 40, fogFar: 115, hemiSky: 0xfff0d0, hemiGround: 0xb08a5a, hemiI: 0.9, sunI: 1.0, sunC: 0xffe0b0 } },
+  { id: 'bay', name: 'Maraca Bay', icon: '\uD83C\uDFD6\uFE0F', spawn: [0, 10], box: [17, 13.5], theme: { fog: 0xb8e8ff, fogNear: 45, fogFar: 130, hemiSky: 0xfff4e8, hemiGround: 0xb89a6a, hemiI: 0.78, sunI: 0.9, sunC: 0xffe8c8 } },
+  { id: 'viejo', name: 'Gran Pueblo Viejo', icon: '\uD83C\uDFDB\uFE0F', spawn: [0, 10], box: [18, 14], theme: { fog: 0xffcfa0, fogNear: 42, fogFar: 125, hemiSky: 0xfff4dc, hemiGround: 0x8a7968, hemiI: 0.92, sunI: 1.04, sunC: 0xffe4b5 } },
 ];
 // gates on the isle (town idx -> position) and the exit gate in every town
-W.GATES = { 1: [0, -20], 2: [-23, 2], 3: [23, 2] };
+W.GATES = { 1: [0, -20], 2: [-23, 2], 3: [23, 2], 4: [0, 19.5] };
 W.EXIT = [0, 13.2];
 
 W.build = function (idx) {
@@ -339,8 +555,18 @@ W.build = function (idx) {
     const path = mat(0xe8c890);
     [[0, 4, 0, -19], [0, 4, -22, 2], [0, 4, 22, 2], [0, 4, 0, 18]].forEach((p) => { const n = Math.round(Math.hypot(p[2] - p[0], p[3] - p[1]) / 1.4); for (let k = 0; k <= n; k++) { const d = new THREE.Mesh(G.cyl20, path); d.scale.set(1.1, 0.05, 1.1); d.position.set(p[0] + (p[2] - p[0]) * k / n, 0.02, p[1] + (p[3] - p[1]) * k / n); A.grp.add(d); } });
     const plaza = new THREE.Mesh(G.cyl20, mat(0xf2d6a8)); plaza.scale.set(4.2, 0.06, 4.2); plaza.position.set(0, 0.03, 4); A.grp.add(plaza);
-    // gates to the towns
-    [[1, 'PI\u00d1ATA PLAZA', 0xff4fd8, 0], [2, 'TACO PUEBLO', 0xff7a3d, Math.PI / 2], [3, 'MARACA BAY', 0x3ff0ff, -Math.PI / 2]].forEach((q) => { const p = W.GATES[q[0]], a = W.arch(q[1], q[2], 5); a.position.set(p[0], 0, p[1]); a.rotation.y = q[3]; A.grp.add(a); const dx = Math.sin(q[3]), dz = Math.cos(q[3]); [-1, 1].forEach((s) => A.col.push({ x: p[0] + dz * s * 2.5, z: p[1] - dx * s * 2.5, r: 0.5 })); });
+    // Cobblestone grand avenues & central stone plaza on Fiesta Isles
+    W.stonePlaza(A.grp, 0, 4, 6.2, r);
+    W.stoneRoad(A.grp, 0, 4, 0, -19.5, 3.2, r);
+    W.stoneRoad(A.grp, 0, 4, -22.5, 2, 3.0, r);
+    W.stoneRoad(A.grp, 0, 4, 22.5, 2, 3.0, r);
+    W.stoneRoad(A.grp, 0, 4, 0, 19, 3.2, r);
+    // Stone merchant shops right on Fiesta Isles Hub so the hub feels like a bustling stone village
+    const hubShopL = add(W.stoneShop('RATITA BAZAAR', 0xff4fd8, 0xdfd3c3, 4.6, 3.6, 3.2), -10.5, -4.5, 2.2, 0.35);
+    const hubShopR = add(W.stoneShop('TORTUGA GEAR', 0x3ad88a, 0xd5c9b8, 4.6, 3.6, 3.2), 10.5, -4.5, 2.2, -0.35);
+    A.hubShops = [{ id: 'bazaar', x: -10.5, z: -2.3 }, { id: 'tortuga_hub', x: 10.5, z: -2.3 }];
+    // gates to the 4 towns (including Gran Pueblo Viejo to the south)
+    [[1, 'PI\u00d1ATA PLAZA', 0xff4fd8, 0], [2, 'TACO PUEBLO', 0xff7a3d, Math.PI / 2], [3, 'MARACA BAY', 0x3ff0ff, -Math.PI / 2], [4, 'GRAN PUEBLO VIEJO', 0xffb703, Math.PI]].forEach((q) => { const p = W.GATES[q[0]], a = W.arch(q[1], q[2], 5.2); a.position.set(p[0], 0, p[1]); a.rotation.y = q[3]; A.grp.add(a); const dx = Math.sin(q[3]), dz = Math.cos(q[3]); [-1, 1].forEach((s) => A.col.push({ x: p[0] + dz * s * 2.5, z: p[1] - dx * s * 2.5, r: 0.5 })); });
     const wel = W.arch('\u00a1BIENVENIDOS!', 0xffd23f, 6); wel.position.set(0, 0, -7.5); A.grp.add(wel); A.col.push({ x: -3, z: -7.5, r: 0.5 }, { x: 3, z: -7.5, r: 0.5 });
     // bus stop + the Fiesta Bus
     add(W.busStop(), 5.5, 3, 0.9, -Math.PI / 2); const bus = add(W.fiestaBus(), 8.6, 5.4, 0, Math.PI / 2); A.col.push({ x: 8.6, z: 4, r: 1.2 }, { x: 8.6, z: 6.8, r: 1.2 }); A.bus = bus;
@@ -354,14 +580,58 @@ W.build = function (idx) {
     A.boats = []; for (let k = 0; k < 4; k++) { const b = boat(FIESTA[k]); const a = k * 1.6 + 0.4; b.position.set(Math.cos(a) * 44, -0.9, Math.sin(a) * 38); b.rotation.y = -a; A.grp.add(b); A.boats.push(b); }
     A.anims.push((t) => { A.boats.forEach((b, k) => { b.position.y = -0.85 + Math.sin(t * 1.4 + k) * 0.12; b.rotation.z = Math.sin(t + k) * 0.06; }); som.rotation.y = t * 0.4; });
   } else {
-    const th = [null, [0xf2c6a0, 0xd8946a], [0xe8c890, 0xb08a5a], [0xf2dca0, 0xd8c08a]][idx];
-    ground(A.grp, 34, 30, th[0], th[1]);
+    const th = [null, [0xf2c6a0, 0xd8946a], [0xe8c890, 0xb08a5a], [0xf2dca0, 0xd8c08a], [0xd8c8b4, 0x8e8070]][idx];
+    ground(A.grp, 38, 32, th[0], th[1]);
     // exit gate (south) + bus stop
     const ex = W.exitGate('\u2193 FIESTA ISLES'); ex.position.set(W.EXIT[0], 0, W.EXIT[1] + 0.4); A.grp.add(ex); A.col.push({ x: -2.6, z: W.EXIT[1] + 0.4, r: 0.4 }, { x: 2.6, z: W.EXIT[1] + 0.4, r: 0.4 });
     add(W.busStop(), 8.5, 11.4, 0.9, Math.PI);
-    if (idx === 1) buildPlaza(A, r, add); else if (idx === 2) buildTaco(A, r, add); else buildBay(A, r, add);
+    if (idx === 1) buildPlaza(A, r, add); else if (idx === 2) buildTaco(A, r, add); else if (idx === 3) buildBay(A, r, add); else buildViejo(A, r, add);
     for (let k = 0; k < 8; k++) { const c = GP.buildCloud(1 + r() * 1.4); c.position.set((r() - 0.5) * 160, 18 + r() * 14, -50 - r() * 60); A.grp.add(c); }
   }
+  // Attach 3D Pets & Patrolling Fiesta Hazards in every area
+  A.pets = [];
+  const petPlacements = [
+    [{ id: 'luna', x: -4.2, z: 5.2 }, { id: 'torty', x: 4.5, z: 5.2 }],
+    [{ id: 'candy', x: -6.2, z: 4.5 }],
+    [{ id: 'pirat', x: -5.5, z: 2.2 }],
+    [{ id: 'snowie', x: 4.2, z: 3.2 }],
+    [{ id: 'luna', x: -5.2, z: 3.5 }, { id: 'pirat', x: 5.2, z: 3.5 }, { id: 'snowie', x: -5.2, z: -3.5 }, { id: 'candy', x: 5.2, z: -3.5 }, { id: 'torty', x: 0, z: 5.8 }]
+  ][idx] || [];
+  petPlacements.forEach((pp) => {
+    const pm = W.pet(pp.id);
+    pm.position.set(pp.x, 0, pp.z);
+    A.grp.add(pm);
+    A.pets.push({ id: pp.id, x: pp.x, z: pp.z, mesh: pm });
+  });
+  A.hazards = [];
+  const hazDefs = [
+    [{ type: 'chili', x0: -6, z0: -4, dx: 6, dz: 0, spd: 1.5, name: 'Runaway Chili Cart' }],
+    [{ type: 'chili', x0: 0, z0: 6.2, dx: 7.5, dz: 0, spd: 1.7, name: 'Disco Jalape\u00f1o Cart' }],
+    [{ type: 'chili', x0: 0, z0: -1.5, dx: 9.5, dz: 0, spd: 1.9, name: 'Spicy Salsa Cart' }],
+    [{ type: 'crab', x0: -4, z0: -4.8, dx: 6.5, dz: 0, spd: 1.8, name: 'Pinching Fiesta Crab' }],
+    [{ type: 'chili', x0: 0, z0: -3.5, dx: 8.5, dz: 0, spd: 1.75, name: 'Cobblestone Pepper Cart' }]
+  ][idx] || [];
+  hazDefs.forEach((hd, hk) => {
+    const hm = hd.type === 'crab' ? W.crab() : W.chiliCart();
+    hm.position.set(hd.x0, 0, hd.z0);
+    A.grp.add(hm);
+    A.hazards.push({ type: hd.type, name: hd.name, x: hd.x0, z: hd.z0, x0: hd.x0, z0: hd.z0, dx: hd.dx, dz: hd.dz, spd: hd.spd, mesh: hm, phase: hk * 1.7 });
+  });
+  A.anims.push((t) => {
+    A.pets.forEach((p, pk) => {
+      if (p.mesh.userData.root) {
+        p.mesh.userData.root.position.y = Math.abs(Math.sin(t * 2.8 + pk)) * 0.12;
+        p.mesh.userData.root.rotation.y = Math.sin(t * 1.4 + pk) * 0.35;
+      }
+    });
+    A.hazards.forEach((h) => {
+      const s = Math.sin(t * h.spd + h.phase), c = Math.cos(t * h.spd + h.phase);
+      h.x = h.x0 + s * h.dx;
+      h.z = h.z0 + s * h.dz;
+      h.mesh.position.set(h.x, 0, h.z);
+      h.mesh.rotation.y = c >= 0 ? 0 : Math.PI;
+    });
+  });
   return A;
 };
 function boat(col) {
@@ -391,9 +661,14 @@ function buildPlaza(A, r, add) {
   add(W.pinataFrame(), 10.5, 3, 0); A.col.push({ x: 8.7, z: 3, r: 0.3 }, { x: 12.3, z: 3, r: 0.3 });
   const pin = W.pinata(); pin.position.set(10.5, 2.6, 3); A.grp.add(pin); A.pin = pin; A.pinSpot = { x: 10.5, z: 4.6 };
   const fo = add(W.fountain(), -10.5, 3, 2.3); A.anims.push(fo.userData.anim); A.fount = { x: -10.5, z: 3 };
-  // buildings around the square
-  const hc = [0xffb3c8, 0xffe08a, 0x9ad8ff, 0xc8a8ff, 0xa8f0b8, 0xffc090];
-  [[-14, -11.5, 0.6], [-14.2, -5, Math.PI / 2], [14.2, -5, -Math.PI / 2], [14, -11.5, -0.6], [-14.2, 9, Math.PI / 2], [14.2, 9, -Math.PI / 2]].forEach((p, k) => { const h = W.house(4, 3 + (k % 3) * 0.8, 3.2, hc[k], k % 2 ? 0xd8643a : null, r); h.position.set(p[0], 0, p[1]); h.rotation.y = p[2]; A.grp.add(h); A.col.push({ x: p[0], z: p[1], r: 2.4 }); });
+  // Cobblestone perimeter promenade + interactive Stone Shops around Piñata Plaza
+  W.stonePlaza(A.grp, 0, -1, 10.6, r);
+  W.stoneRoad(A.grp, -13, 8.5, 13, 8.5, 3.0, r);
+  const sPin = add(W.stoneShop('PI\u00d1ATA WORKSHOP', 0xff4fd8, 0xe6d6c3, 4.6, 3.8, 3.2), -14.2, -4.5, 2.3, Math.PI / 2);
+  const sCandy = add(W.stoneShop('CANDY EMPORIUM', 0xffbe0b, 0xeadbc8, 4.6, 3.8, 3.2), 14.2, -4.5, 2.3, -Math.PI / 2);
+  A.plazaShops = [{ id: 'pinata_shop', x: -11.6, z: -4.5 }, { id: 'candy_shop', x: 11.6, z: -4.5 }];
+  const hc = [0xffb3c8, 0xffe08a, 0x9ad8ff, 0xc8a8ff];
+  [[-14, -11.5, 0.6], [14, -11.5, -0.6], [-14.2, 9, Math.PI / 2], [14.2, 9, -Math.PI / 2]].forEach((p, k) => { const h = W.house(4, 3 + (k % 3) * 0.8, 3.2, hc[k], k % 2 ? 0xd8643a : null, r); h.position.set(p[0], 0, p[1]); h.rotation.y = p[2]; A.grp.add(h); A.col.push({ x: p[0], z: p[1], r: 2.4 }); });
   // banners + lights criss-crossing the square
   A.flags = [];
   [[-14, 4.5, -11, 14, 4.5, -11], [-13, 4.2, -5, 13, 4.2, 5], [-13, 4.2, 5, 13, 4.2, -5], [-14, 4.4, 9, 14, 4.4, 9]].forEach((q) => A.flags.push(...W.papel(A.grp, q[0], q[1], q[2], q[3], q[4], q[5], r)));
@@ -417,7 +692,11 @@ function buildTaco(A, r, add) {
   // houses behind the stalls + sides
   const hc = [0xffc090, 0xffb3c8, 0xfff0a0, 0xa8e0ff, 0xc8f0a8];
   for (let k = 0; k < 5; k++) { const h = W.house(4.6, 3.4, 3, hc[k], 0xc8543a, r); h.position.set(-12 + k * 6, 0, -11.6); A.grp.add(h); }
-  [[-13, 8], [13, 8]].forEach((p, k) => { const h = W.house(4, 3, 3.4, hc[k + 2], null, r); h.position.set(p[0], 0, p[1]); h.rotation.y = k ? -Math.PI / 2 : Math.PI / 2; A.grp.add(h); A.col.push({ x: p[0], z: p[1], r: 2.3 }); });
+  W.stoneRoad(A.grp, -16, -1.5, 16, -1.5, 5.2, r);
+  W.stoneRoad(A.grp, 0, -1.5, 0, 12, 3.2, r);
+  add(W.stoneShop('SALSA & SPICE SHOP', 0xff5400, 0xdfd0be, 4.6, 3.6, 3.2), -13.2, 7.8, 2.3, Math.PI / 2);
+  add(W.stoneShop('SOMBRERO SASTRE', 0x8338ec, 0xe5d6c4, 4.6, 3.6, 3.2), 13.2, 7.8, 2.3, -Math.PI / 2);
+  A.tacoShops = [{ id: 'salsa_shop', x: -10.6, z: 7.8 }, { id: 'sombrero_shop', x: 10.6, z: 7.8 }];
   // picnic tables
   A.tables = []; [-8, 0, 8].forEach((x, k) => { add(W.picnic(FIESTA[k * 2]), x, 4, 1.3); A.tables.push({ x, z: 5.4 }); });
   // chili garlands + papel picado + cacti
@@ -467,8 +746,60 @@ function buildBay(A, r, add) {
   // boats + buoys
   A.boats = []; [[-4, -16], [6, -20], [13, -14]].forEach((p, k) => { const b = boat(FIESTA[k + 2]); b.position.set(p[0], 0.05, p[1]); b.rotation.y = k * 1.3; A.grp.add(b); A.boats.push(b); });
   const buoys = []; for (let k = 0; k < 5; k++) { const b = M(G.sphereLo, k % 2 ? 0xff4d4d : 0xffffff, 0.3); b.position.set(-14 + k * 7, 0.15, -11); A.grp.add(b); buoys.push(b); }
-  [[-15, 11], [15, 11], [-15, 2], [15, 6]].forEach((p) => add(W.palm(1.1, 0.25), p[0], p[1], 0.6));
+  W.stoneRoad(A.grp, -16, 8.5, 16, 8.5, 3.0, r);
+  add(W.stoneShop('MARACA SURF SHOP', 0x00bbf9, 0xe2d6c5, 4.4, 3.5, 3.0), -13.5, 6.2, 2.2, Math.PI / 2);
+  add(W.stoneShop('PERLA SHELL BOUTIQUE', 0xff6ad5, 0xe8dcd0, 4.4, 3.5, 3.0), 13.5, 6.2, 2.2, -Math.PI / 2);
+  A.bayShops = [{ id: 'surf_shop', x: -11.0, z: 6.2 }, { id: 'pearl_shop', x: 11.0, z: 6.2 }];
+  [[-15, 11], [15, 11], [-15, 2], [15, 10]].forEach((p) => add(W.palm(1.1, 0.25), p[0], p[1], 0.6));
   A.anims.push((t) => { bp.rotation.y = t * 0.8; foam.forEach((f, k) => { f.position.z = -8 - ((t * 0.4 + k / 3) % 1) * 2.4; f.material.opacity = 0.6 * (1 - ((t * 0.4 + k / 3) % 1)); }); A.boats.forEach((b, k) => { b.position.y = 0.05 + Math.sin(t * 1.3 + k) * 0.12; b.rotation.z = Math.sin(t + k) * 0.07; }); buoys.forEach((b, k) => { b.position.y = 0.15 + Math.sin(t * 2 + k) * 0.1; }); });
+}
+
+/* ---------- Area 4: Gran Pueblo Viejo (Grand Cobblestone Town & Stone Shop District) ---------- */
+function buildViejo(A, r, add) {
+  // Full cobblestone town square & grand stone streets
+  W.stonePlaza(A.grp, 0, -0.5, 11.5, r);
+  W.stoneRoad(A.grp, -17, -0.5, 17, -0.5, 4.4, r);
+  W.stoneRoad(A.grp, 0, -13, 0, 12.5, 4.4, r);
+  W.stoneRoad(A.grp, -15, -8.5, 15, -8.5, 3.4, r);
+  W.stoneRoad(A.grp, -15, 6.5, 15, 6.5, 3.4, r);
+
+  // Grand Clocktower Cathedral at the north end of the square
+  const tower = add(W.clockTower(), 0, -11.8, 2.6, 0);
+  A.bellTower = { x: 0, z: -9.0 };
+
+  // Central Royal Fountain in the cobblestone plaza
+  const fo = add(W.fountain(), 0, -0.5, 2.3); A.anims.push(fo.userData.anim); A.viejoFount = { x: 0, z: 1.8 };
+
+  // 6 Grand Carved-Stone Shops lining the cobblestone avenues
+  const shopDefs = [
+    { id: 'joyeria', label: 'LA JOYER\u00cdA GEMS', col: 0xffbe0b, wall: 0xe6d8c5, x: -13.5, z: -6.5, ry: Math.PI / 2, sx: -10.8, sz: -6.5 },
+    { id: 'artesanias', label: 'ARTESAN\u00cdAS DE PIEDRA', col: 0xff4fd8, wall: 0xddd0be, x: -13.5, z: 2.5, ry: Math.PI / 2, sx: -10.8, sz: 2.5 },
+    { id: 'botica', label: 'BOTICA RATITA', col: 0x3ff0ff, wall: 0xe4d6c4, x: 13.5, z: -6.5, ry: -Math.PI / 2, sx: 10.8, sz: -6.5 },
+    { id: 'armory', label: 'TORTUGA TECH FORGE', col: 0x3ad88a, wall: 0xd6cab8, x: 13.5, z: 2.5, ry: -Math.PI / 2, sx: 10.8, sz: 2.5 },
+    { id: 'panaderia', label: 'PANADER\u00cdA DULCE', col: 0xff7a3d, wall: 0xeadbc8, x: -7.5, z: -11.2, ry: 0, sx: -7.5, sz: -8.6 },
+    { id: 'musica', label: 'CASA DE LA M\u00daSICA', col: 0x9b5de5, wall: 0xe2d4c2, x: 7.5, z: -11.2, ry: 0, sx: 7.5, sz: -8.6 },
+  ];
+  A.viejoShops = [];
+  shopDefs.forEach((sd) => {
+    add(W.stoneShop(sd.label, sd.col, sd.wall, 5.0, 4.0, 3.4), sd.x, sd.z, 2.4, sd.ry);
+    A.viejoShops.push({ id: sd.id, label: sd.label, x: sd.sx, z: sd.sz });
+  });
+
+  // Stone colonnade benches, lanterns & flower pots
+  [[-5.5, 4.2], [5.5, 4.2], [-5.5, -4.8], [5.5, -4.8]].forEach((p, k) => {
+    add(W.bench(), p[0], p[1], 0.9, k < 2 ? Math.PI : 0);
+  });
+  [[-8.5, 4.5], [8.5, 4.5], [-8.5, -4.5], [8.5, -4.5], [-3.8, 8.8], [3.8, 8.8]].forEach((p, k) => {
+    add(W.flowerPot(1.45, FIESTA[k % 7]), p[0], p[1], 0.55);
+  });
+
+  // Criss-crossing papel picado & warm fiesta lights overhead
+  A.flags = [];
+  [[-13, 4.8, -6.5, 13, 4.8, -6.5], [-13, 4.8, 2.5, 13, 4.8, 2.5], [-12, 5.0, -6, 12, 5.0, 3], [-12, 5.0, 3, 12, 5.0, -6]].forEach((q) => A.flags.push(...W.papel(A.grp, q[0], q[1], q[2], q[3], q[4], q[5], r)));
+  [[-13, 5.2, -2, 13, 5.2, -2], [-6, 5.2, -10, -6, 5.2, 8], [6, 5.2, -10, 6, 5.2, 8]].forEach((q) => W.lights(A.grp, q[0], q[1], q[2], q[3], q[4], q[5]));
+  A.anims.push((t) => {
+    A.flags.forEach((f) => { f.rotation.x = Math.sin(t * 2 + f.userData.sway) * 0.18; });
+  });
 }
 
 /* ---------- Fiesta Isles party board (Party Board mode, DLC) ---------- */

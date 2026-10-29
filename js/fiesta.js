@@ -24,6 +24,75 @@ const FOODS = [
   { n: 'Agua Fresca', e: '\uD83E\uDD64', p: 1, bf: 'fresh', d: 'So fresh! +10% on your next dance score' },
 ];
 FZ.FOODS = FOODS;
+
+const SHOPS = [
+  { id: 'bazaar', a: 0, name: 'Ratita Stone Bazaar', icon: '🏺', keeper: 'Doña Carmen', desc: 'Hand-carved stone pottery & lucky Ratita fiesta charms!', items: [
+    { id: 'idol', n: 'Stone Fiesta Idol', e: '🗿', p: 4, bf: 'lucky', d: 'Doubles every coin you pick up for 30s!' },
+    { id: 'lantern', n: 'Ratita Paper Lantern', e: '🏮', p: 3, bf: 'magnet', d: 'Draws nearby coins right into your pocket for 25s!' }
+  ]},
+  { id: 'tortuga_hub', a: 0, name: 'Tortuga Tech Gear Outpost', icon: '🐢', keeper: 'Ingeniero Mateo', desc: 'Shell-tough Tortuga Tech shields & turbo boots!', items: [
+    { id: 'shell_shield', n: 'Tortuga Shell Shield', e: '🛡️', p: 4, bf: 'shield', d: 'Blocks all Spicy Chili Carts & Pinching Crabs + restores 100% Stamina!' },
+    { id: 'jet_sandals', n: 'Turbo Fiesta Huaraches', e: '👟', p: 3, bf: 'speed', d: 'Sprint 40% faster across cobblestone streets for 25s!' }
+  ]},
+  { id: 'pinata_shop', a: 1, name: 'Taller de Piñatas', icon: '🪅', keeper: 'Maestro Bruno', desc: 'Custom party piñatas, confetti sticks & fiesta horns!', items: [
+    { id: 'golden_bat', n: 'Golden Piñata Bat', e: '🏏', p: 4, bf: 'lucky', d: '2x coin drops & bonus fiesta luck for 25s!' },
+    { id: 'confetti_pack', n: 'Mega Confetti Bomb', e: '🎊', p: 2, bf: 'fresh', d: '+10% Dance Floor score & instant confetti burst!' }
+  ]},
+  { id: 'candy_shop', a: 1, name: 'Dulcería Mega Candy', icon: '🍬', keeper: 'Dulce Sofia', desc: 'Artisanal Mexican sweets, tamarindos & sugar rushes!', items: [
+    { id: 'marzipan', n: 'Mazapán Real', e: '🍬', p: 2, bf: 'magnet', d: 'Sweet coin magnet for 25s + +35% Stamina!' },
+    { id: 'chamoy', n: 'Chamoy Rocket Pop', e: '🍭', p: 3, bf: 'speed', d: 'Spicy-sweet speed boost for 25s!' }
+  ]},
+  { id: 'salsa_shop', a: 2, name: 'Mercado de Salsas', icon: '🌶️', keeper: 'Don Habanero', desc: 'Stone-ground molcajete salsas & fireproof spice tonics!', items: [
+    { id: 'molcajete', n: 'Molcajete Guacamole', e: '🥑', p: 3, bf: 'shield', d: 'Full Stamina restore + hazard immunity for 25s!' },
+    { id: 'habanero', n: 'Salsa Habanero', e: '🌶️', p: 2, bf: 'speed', d: 'Blazing 40% speed boost for 25s!' }
+  ]},
+  { id: 'sombrero_shop', a: 2, name: 'Sombrero Sastre', icon: '👒', keeper: 'Sastre Diego', desc: 'Velvet charro sombreros, ponchos & embroidered sashes!', items: [
+    { id: 'charro_hat', n: 'Sombrero de Gala', e: '🤠', p: 4, bf: 'lucky', d: '2x coin multiplier & VIP fiesta style for 25s!' },
+    { id: 'serape', n: 'Rainbow Serape Cape', e: '🧣', p: 3, bf: 'fresh', d: '+10% Dance score & +50% Stamina!' }
+  ]},
+  { id: 'surf_shop', a: 3, name: 'Maraca Surf & Board Shop', icon: '🏄', keeper: 'Kai del Mar', desc: 'Carved wooden surfboards, crab-proof flip-flops & beach gear!', items: [
+    { id: 'crab_boots', n: 'Crab-Proof Reef Boots', e: '🥾', p: 3, bf: 'shield', d: 'Protects from Pinching Beach Crabs + restores 100% Stamina!' },
+    { id: 'wave_wax', n: 'Turbo Surf Wax', e: '🏄', p: 2, bf: 'speed', d: 'Glide 40% faster across the sand for 25s!' }
+  ]},
+  { id: 'pearl_shop', a: 3, name: 'Perla Shell Boutique', icon: '🐚', keeper: 'Sirena Valeria', desc: 'Ocean pearls, sea-glass jewelry & conch horns!', items: [
+    { id: 'sea_pearl', n: 'Luminous Bay Pearl', e: '🦪', p: 4, bf: 'lucky', d: 'Doubles every coin you collect for 25s!' },
+    { id: 'conch_charm', n: 'Tidal Magnet Shell', e: '🐚', p: 3, bf: 'magnet', d: 'Pulls beach coins from far away for 25s!' }
+  ]},
+  { id: 'joyeria', a: 4, name: 'La Joyería Crown & Gems', icon: '👑', keeper: 'Joyero Lorenzo', desc: 'Gran Pueblo Viejo’s premier stone vault of crowns, rubies & fiesta gold!', items: [
+    { id: 'emerald_crown', n: 'Corona de Esmeralda', e: '👑', p: 5, bf: 'lucky', d: 'Royal 2x coin multiplier + +100% Stamina!' },
+    { id: 'sun_brooch', n: 'Sol de Oro Amulet', e: '☀️', p: 4, bf: 'magnet', d: 'Wide-range golden coin magnet for 30s!' }
+  ]},
+  { id: 'artesanias', a: 4, name: 'Artesanías de Piedra', icon: '🏺', keeper: 'Maestra Elena', desc: 'Cobblestone sculptures, painted talavera tiles & fiesta masks!', items: [
+    { id: 'jaguar_mask', n: 'Máscara de Jaguar', e: '🎭', p: 3, bf: 'speed', d: 'Sprint 40% faster through Gran Pueblo Viejo!' },
+    { id: 'talavera_vase', n: 'Jarrón de Talavera', e: '🏺', p: 3, bf: 'lucky', d: 'Lucky 2x coin blessing for 25s!' }
+  ]},
+  { id: 'botica', a: 4, name: 'Botica Ratita Elixir Shop', icon: '🧪', keeper: 'Doctora Clara', desc: 'Ratita Industries herbal tonics, stamina brews & fiesta elixirs!', items: [
+    { id: 'vital_brew', n: 'Tónico de Fiesta 100%', e: '🧪', p: 2, bf: 'shield', d: 'Restores 100% Stamina & grants a 25s Hazard Shield!' },
+    { id: 'spark_tea', n: 'Elixir Relámpago', e: '⚡', p: 3, bf: 'speed', d: 'Supercharged fiesta speed for 25s!' }
+  ]},
+  { id: 'armory', a: 4, name: 'Tortuga Tech Stone Forge', icon: '🛡️', keeper: 'Herrero Héctor', desc: 'Heavy-duty Tortuga Tech cobblestone armor & hazard deflectors!', items: [
+    { id: 'carapace', n: 'Tortuga Carapace Armor', e: '🛡️', p: 4, bf: 'shield', d: 'Unbreakable 30s Hazard Shield + full 100% Stamina!' },
+    { id: 'mag_glove', n: 'Guante Magnético', e: '🧤', p: 3, bf: 'magnet', d: 'Industrial Tortuga coin magnet for 25s!' }
+  ]},
+  { id: 'panaderia', a: 4, name: 'Panadería Dulce Viejo', icon: '🥐', keeper: 'Panadero Tomás', desc: 'Warm conchas, tres leches cake & cinnamon hot chocolate!', items: [
+    { id: 'concha', n: 'Concha de Vainilla', e: '🥯', p: 2, bf: 'shield', d: 'Warm bakery heal: +100% Stamina & cozy shield!' },
+    { id: 'choco', n: 'Chocolate Abuelita', e: '☕', p: 2, bf: 'speed', d: 'Rich cocoa energy boost (+40% speed)!' }
+  ]},
+  { id: 'musica', a: 4, name: 'Casa de la Música', icon: '🎺', keeper: 'Maestro Rodrigo', desc: 'Handcrafted guitars, silver trumpets & golden maracas!', items: [
+    { id: 'gold_maracas', n: 'Maracas de Oro', e: '🪇', p: 3, bf: 'fresh', d: '+10% Dance Floor bonus + fiesta sparkle!' },
+    { id: 'silver_horn', n: 'Trompeta Real', e: '🎺', p: 4, bf: 'lucky', d: '2x coin fanfare for 25s!' }
+  ]}
+];
+FZ.SHOPS = SHOPS;
+
+const PETS_DATA = [
+  { id: 'luna', name: 'Luna', icon: '🐀', title: 'Ratita Grey Fancy Rat', area: 0, areaName: 'Fiesta Isles & Gran Pueblo Viejo', buff: 'speed', gift: 4, desc: 'Sleek Grey Fancy Rat! Squeaks a cosmic melody, grants +4 coins, restores Stamina & boosts run speed!' },
+  { id: 'pirat', name: 'Pi-rat', icon: '🏴‍☠️', title: 'One-Eyed Pirate Fancy Rat', area: 2, areaName: 'Taco Pueblo & Gran Pueblo Viejo', buff: 'lucky', gift: 5, desc: 'One-Eyed Brown Fancy Rat with a pirate eyepatch! Shares +5 doubloon coins & 2x Lucky Coins buff!' },
+  { id: 'snowie', name: 'Snowie', icon: '🐁', title: 'Frosty White Fancy Rat', area: 3, areaName: 'Maraca Bay & Gran Pueblo Viejo', buff: 'shield', gift: 4, desc: 'Pure White Fancy Rat! Restores 100% Stamina & wraps you in a Frosty Shield against Chili Carts & Crabs!' },
+  { id: 'candy', name: 'Candy', icon: '🐶', title: 'Mini Schnauzer Guard Pup', area: 1, areaName: 'Piñata Plaza & Gran Pueblo Viejo', buff: 'magnet', gift: 4, desc: 'Bearded grey Miniature Schnauzer! Barks away hazards, grants +4 coins, Coin Magnet & co-runs Free Bailout!' },
+  { id: 'torty', name: 'Torty (Martina)', icon: '🐢', title: 'Tortuga Desert Tortoise', area: 0, areaName: 'Fiesta Isles & Gran Pueblo Viejo', buff: 'shield', gift: 5, desc: 'Shell-tough Desert Tortoise! Restores 100% Stamina, grants Tortuga Shield & free 0-coin Emergency Bailout!' }
+];
+FZ.PETS = PETS_DATA;
 const EMOTES = { wave: ['\uD83D\uDC4B', 2], dance: ['\uD83D\uDC83', 99], flip: ['\uD83E\uDD38', 1], laugh: ['\uD83D\uDE02', 2] };
 const MGN = (id) => { const d = GP.MG && GP.MG[id]; return d ? d.name : id; };
 const SK = [0xf2c49a, 0xd8a070, 0xb07a4a, 0x8a5a3a, 0xe8b88a];
@@ -73,6 +142,30 @@ const NPCS = [
     lines: ['Duuude, the waves are gnarly today!', 'King of the Hill, bro? Winner rules the beach!'] },
   { id: 'arenita', a: 3, name: 'Arenita', role: 'castle', kid: true, at: [-0.4, -1.4], face: Math.PI, look: { dress: 0xffd23f, shirt: 0xff6ad5, bun: true, skin: SK[0] },
     lines: ['Help me build the BIGGEST sandcastle! Press A!', 'More sand! More towers!'] },
+  // New Shopkeepers & Villagers on Fiesta Isles & Towns
+  { id: 'carmen', a: 0, name: 'Doña Carmen', role: 'shop', shop: 'bazaar', at: [-9.2, -2.5], face: 0.3, look: { dress: 0xff4fd8, shirt: 0xffe08a, bun: true, flower: 0xffd23f, skin: SK[1] },
+    lines: ['Welcome to the Ratita Stone Bazaar! Carved stone idols & lanterns inside!', 'Our stone shops were built to make Fiesta Isles grand and vibrant!'] },
+  { id: 'mateo', a: 0, name: 'Ing. Mateo', role: 'shop', shop: 'tortuga_hub', at: [9.2, -2.5], face: -0.3, look: { shirt: 0x3ad88a, pants: 0x1b1440, hat: 'cap', hatCol: 0x3ad88a, skin: SK[2] },
+    lines: ['Tortuga Tech Gear Outpost! Grab a Shell Shield before a runaway Chili Cart bumps you!', 'Remember: if you ever hit 0 coins or 0% Stamina, Torty & Candy give a FREE Emergency Bailout!'] },
+  // Gran Pueblo Viejo (Area 4 - Grand Cobblestone Town & Stone Shop District)
+  { id: 'alcalde', a: 4, name: 'Alcalde Don Aurelio', role: 'chat', at: [0, 3.6], face: 0, look: { poncho: 0xffbe0b, shirt: 0xffffff, pants: 0x1b1440, hat: 'sombrero', hatCol: 0x1b1440, stache: true, hair: 0xdddddd, skin: SK[1] },
+    lines: ['¡Bienvenidos a Gran Pueblo Viejo! Our grand cobblestone town has 6 carved-stone shops and the Clocktower Cathedral!', 'Visit La Joyería, Artesanías de Piedra, Botica Ratita, Tortuga Tech Forge, Panadería Dulce, and Casa de la Música!', 'All 5 pets — Luna, Pi-rat, Snowie, Candy, and Torty — hang out right here in the cobblestone square!'] },
+  { id: 'lorenzo', a: 4, name: 'Joyero Lorenzo', role: 'shop', shop: 'joyeria', at: [-10.2, -6.5], face: Math.PI / 2, look: { shirt: 0xffbe0b, pants: 0x1b1440, hat: 'tophat', stache: true, skin: SK[0] },
+    lines: ['La Joyería Crown & Gems! Finest emeralds and golden sun amulets in Gran Pueblo Viejo!'] },
+  { id: 'elena', a: 4, name: 'Maestra Elena', role: 'shop', shop: 'artesanias', at: [-10.2, 2.5], face: Math.PI / 2, look: { dress: 0xff4fd8, shirt: 0xffffff, long: true, flower: 0x3ff0ff, skin: SK[2] },
+    lines: ['Artesanías de Piedra! Hand-carved jaguar masks and painted talavera pottery!'] },
+  { id: 'clara', a: 4, name: 'Doctora Clara', role: 'shop', shop: 'botica', at: [10.2, -6.5], face: -Math.PI / 2, look: { dress: 0x3ff0ff, shirt: 0xffffff, bun: true, skin: SK[4] },
+    lines: ['Botica Ratita! Drink a Tónico de Fiesta to restore 100% Stamina and block runaway Chili Carts!'] },
+  { id: 'hector', a: 4, name: 'Herrero Héctor', role: 'shop', shop: 'armory', at: [10.2, 2.5], face: -Math.PI / 2, look: { shirt: 0x3ad88a, pants: 0x22223b, apron: true, stache: true, skin: SK[3] },
+    lines: ['Tortuga Tech Stone Forge! Our carapace armor shrugs off any fiesta hazard!'] },
+  { id: 'tomas', a: 4, name: 'Panadero Tomás', role: 'shop', shop: 'panaderia', at: [-7.5, -8.2], face: 0, look: { shirt: 0xffffff, pants: 0x4a3a2a, hat: 'chef', apron: true, skin: SK[1] },
+    lines: ['Fresh warm conchas and hot chocolate straight from our stone ovens!'] },
+  { id: 'rodrigo', a: 4, name: 'Maestro Rodrigo', role: 'shop', shop: 'musica', at: [7.5, -8.2], face: 0, look: { shirt: 0x9b5de5, pants: 0x1b1440, hat: 'sombrero', hatCol: 0x9b5de5, prop: 'guitar', skin: SK[2] },
+    lines: ['Casa de la Música! Golden maracas and silver trumpets for true fiesta legends!'] },
+  { id: 'valiente', a: 4, name: 'Capitán Valiente', role: 'chal', chal: 'bomb', route: [[-7, 6], [7, 6], [7, -2], [-7, -2]], speed: 2.3, look: { poncho: 0xff4d4d, shirt: 0x1b1440, hat: 'sombrero', hatCol: 0xffd23f, stache: true, skin: SK[1] },
+    lines: ['In Gran Pueblo Viejo we play Bomb Tag on the cobblestones! Dare to challenge me for 8 coins?', 'Watch out for the Cobblestone Pepper Cart while you run!'] },
+  { id: 'isabela', a: 4, name: 'Isabela', role: 'chat', route: [[-10, 0], [0, 7], [10, 0], [0, -5]], speed: 1.9, look: { dress: 0xff9ad5, shirt: 0xffffff, long: true, flower: 0xffbe0b, skin: SK[0] },
+    lines: ['Gran Pueblo Viejo is so lively! Look at the Clocktower and all the carved stone shops!', 'Have you petted Luna, Pi-rat, Snowie, Candy, and Torty yet?'] },
 ];
 FZ.NPCS = NPCS;
 const STAMPS = [
@@ -88,7 +181,13 @@ const STAMPS = [
   ['fool', '\uD83E\uDD2A', 'Goofball', 'Do all 4 silly emotes'],
 ];
 FZ.STAMPS = STAMPS;
-const save = () => { GP.save.fz = GP.save.fz || { st: {}, talk: [], foods: [], towns: [], coins: 0, em: [], champ: false }; return GP.save.fz; };
+const save = () => {
+  GP.save.fz = GP.save.fz || { st: {}, talk: [], foods: [], towns: [], coins: 0, em: [], champ: false, shops: [], pets: [], hp: 100, bailouts: 0 };
+  if (typeof GP.save.fz.hp !== 'number') GP.save.fz.hp = 100;
+  if (!Array.isArray(GP.save.fz.shops)) GP.save.fz.shops = [];
+  if (!Array.isArray(GP.save.fz.pets)) GP.save.fz.pets = [];
+  return GP.save.fz;
+};
 
 /* ======================================================================
    WORLD (built lazily, one area visible at a time)
@@ -102,14 +201,32 @@ function area(a) {
 function spots(a, A) {
   const L = [];
   L.push(a === 0 ? { k: 'bus', x: 5.5, z: 3, r: 2.4 } : { k: 'bus', x: 8.5, z: 10.6, r: 2.2 });
-  if (a === 1) L.push({ k: 'dance', x: 0, z: -1, r: 3.9 }, { k: 'pin', x: A.pinSpot.x, z: A.pinSpot.z, r: 2.3 }, { k: 'wish', x: A.fount.x, z: A.fount.z, r: 3.4 }, { k: 'band', x: 0, z: -8, r: 2.4 });
-  if (a === 2) { A.stalls.forEach((s) => L.push({ k: 'eat', x: s.x, z: s.z, r: 1.9, food: s.k })); A.tables.forEach((t) => L.push({ k: 'sit', x: t.x, z: t.z, r: 1.5 })); }
-  if (a === 3) { A.hammocks.forEach((h) => L.push({ k: 'nap', x: h.x, z: h.z, r: 1.8, h })); L.push({ k: 'build', x: A.castle.x, z: A.castle.z, r: 2.2 }); }
+  if (a === 0 && A.hubShops) A.hubShops.forEach((s) => L.push({ k: 'shop', x: s.x, z: s.z, r: 2.5, shop: s.id }));
+  if (a === 1) {
+    L.push({ k: 'dance', x: 0, z: -1, r: 3.9 }, { k: 'pin', x: A.pinSpot.x, z: A.pinSpot.z, r: 2.3 }, { k: 'wish', x: A.fount.x, z: A.fount.z, r: 3.4 }, { k: 'band', x: 0, z: -8, r: 2.4 });
+    if (A.plazaShops) A.plazaShops.forEach((s) => L.push({ k: 'shop', x: s.x, z: s.z, r: 2.5, shop: s.id }));
+  }
+  if (a === 2) {
+    A.stalls.forEach((s) => L.push({ k: 'eat', x: s.x, z: s.z, r: 1.9, food: s.k }));
+    A.tables.forEach((t) => L.push({ k: 'sit', x: t.x, z: t.z, r: 1.5 }));
+    if (A.tacoShops) A.tacoShops.forEach((s) => L.push({ k: 'shop', x: s.x, z: s.z, r: 2.5, shop: s.id }));
+  }
+  if (a === 3) {
+    A.hammocks.forEach((h) => L.push({ k: 'nap', x: h.x, z: h.z, r: 1.8, h }));
+    L.push({ k: 'build', x: A.castle.x, z: A.castle.z, r: 2.2 });
+    if (A.bayShops) A.bayShops.forEach((s) => L.push({ k: 'shop', x: s.x, z: s.z, r: 2.5, shop: s.id }));
+  }
+  if (a === 4) {
+    if (A.viejoFount) L.push({ k: 'wish', x: A.viejoFount.x, z: A.viejoFount.z, r: 3.2 });
+    if (A.bellTower) L.push({ k: 'bell', x: A.bellTower.x, z: A.bellTower.z, r: 2.8 });
+    if (A.viejoShops) A.viejoShops.forEach((s) => L.push({ k: 'shop', x: s.x, z: s.z, r: 2.6, shop: s.id }));
+  }
+  if (A.pets) A.pets.forEach((p) => L.push({ k: 'pet', x: p.x, z: p.z, r: 2.1, pet: p.id }));
   return L;
 }
 function bounds(a, p) {
-  if (a === 0) { const e = Math.hypot(p.x / 27, p.z / 22.5); if (e > 1) { p.x /= e; p.z /= e; } }
-  else { p.x = clamp(p.x, -15.6, 15.6); p.z = clamp(p.z, a === 3 ? -7.6 : -13.2, 14.2); }
+  if (a === 0) { const e = Math.hypot(p.x / 28.5, p.z / 23.5); if (e > 1) { p.x /= e; p.z /= e; } }
+  else { p.x = clamp(p.x, -16.2, 16.2); p.z = clamp(p.z, a === 3 ? -7.6 : -13.2, 14.2); }
   const A = area(a);
   for (const c of A.col) { const dx = p.x - c.x, dz = p.z - c.z, d = Math.hypot(dx, dz), m = c.r + 0.35; if (d < m && d > 1e-4) { p.x = c.x + dx / d * m; p.z = c.z + dz / d * m; } }
 }
@@ -125,7 +242,7 @@ FZ.npcPos = npcPos;
 function ensureRoot() {
   if (root) { if (!root.parent) C.scene.add(root); return; }
   root = new THREE.Group(); C.scene.add(root); sky = W.sky(); root.add(sky);
-  for (let a = 0; a < 4; a++) area(a);
+  for (let a = 0; a < W.AREAS.length; a++) area(a);
   NPCS.forEach((n) => {
     const h = W.folk(n.look); if (n.kid) h.root.scale.setScalar(0.72);
     const tag = GP.nameTag(n.name, n.role === 'chal' ? '#ff4fd8' : n.role === 'food' ? '#ffd23f' : '#3ff0ff'); tag.position.y = n.kid ? 2.6 : 2.3; tag.scale.multiplyScalar(n.kid ? 1.25 : 0.9); h.root.add(tag); h.tag = tag;
@@ -146,7 +263,7 @@ FZ.start = function () {
   S.fz = { t: 0, p: S.pl.map((_, i) => ({ a: 0, x: -2 + i * 2, z: 12.5, r: Math.PI, em: '', mv: 0, h: -1, ht: 0, bf: null, gs: 0 })), coins: [], cid: 1, pin: { hp: 8, re: 0, sw: -9 }, castle: 0, castleRe: 0, band: 0, pend: 0, chal: null, cd: 0, uid: 1, pinBy: null, castleBy: null, lastWin: null, spawnT: 0 };
   S.fzOwn = FZ.owned();
   bot.length = 0; met.clear();
-  for (let a = 0; a < 4; a++) for (let k = 0; k < (a === 0 ? 12 : 8); k++) spawnCoin(S.fz, a);
+  for (let a = 0; a < W.AREAS.length; a++) for (let k = 0; k < (a === 0 ? 14 : 10); k++) spawnCoin(S.fz, a);
   C.msg('\u00a1Bienvenidos a la Fiesta!', 'Explore the Fiesta Isles: chat, eat, dance, smash pi\u00f1atas and challenge friends!', '#ff4fd8');
   C.setPhase('roam', 0);
 };
@@ -168,7 +285,7 @@ FZ.hostStep = function (dt) {
   S.pl.forEach((_, i) => { if (C.isBot(i)) botStep(S, F, i, dt); });
   // coins: keep every area stocked
   F.spawnT -= dt;
-  if (F.spawnT <= 0) { F.spawnT = 0.5; for (let a = 0; a < 4; a++) if (F.coins.filter((c) => c[1] === a).length < (a === 0 ? 12 : 8)) spawnCoin(F, a); }
+  if (F.spawnT <= 0) { F.spawnT = 0.5; for (let a = 0; a < W.AREAS.length; a++) if (F.coins.filter((c) => c[1] === a).length < (a === 0 ? 14 : 10)) spawnCoin(F, a); }
   for (let k = F.coins.length - 1; k >= 0; k--) {
     const c = F.coins[k];
     for (let i = 0; i < F.p.length; i++) {
@@ -211,7 +328,45 @@ FZ.hostAct = function (i, m, pid) {
       if (F.pin.hp <= 0) { F.pin.re = GP.FAST ? 4 : 20; for (let q = 0; q < 14; q++) { const a = q / 14 * TAU, rr = 1.4 + Math.random() * 2.2; F.coins.push([F.cid++, 1, +(10.5 + Math.cos(a) * rr).toFixed(2), +(4 + Math.sin(a) * rr).toFixed(2), q < 2 ? 5 : 1]); } C.addCoins(i, 3); F.pinBy = { id: ++F.uid, i }; C.fx('fzboom', i); C.msg('\u00a1PI\u00d1ATA!', C.nm(i) + ' smashed the pi\u00f1ata! Coins everywhere!', '#ff4fd8'); }
       break; }
     case 'fzdance': { const sc = clamp(+v.score || 0, 0, 100), n = Math.min(11, Math.round(sc / 9)); if (n) C.addCoins(i, n); C.msg('\uD83D\uDC83 ' + C.nm(i) + ' danced!', 'Rank ' + rank(sc) + ' \u00b7 +' + n + ' coins', '#3ff0ff'); break; }
-    case 'fzwish': { if (p.a !== 1 || !near(A.fount.x, A.fount.z, 4) || S.pl[i].coins < 1) break; C.addCoins(i, -1); if (Math.random() < 0.22) { C.addCoins(i, 6); C.fx('coins', i); C.msg('Wish granted!', 'The fountain gives ' + C.nm(i) + ' 6 coins!', '#3ff0ff'); } else C.fx('splash', i); break; }
+    case 'fzwish': { const fpt = A.fount || A.viejoFount; if (!fpt || !near(fpt.x, fpt.z, 4.2) || S.pl[i].coins < 1) break; C.addCoins(i, -1); if (Math.random() < 0.35) { C.addCoins(i, 6); C.fx('coins', i); C.msg('Wish granted!', 'The fountain blesses ' + C.nm(i) + ' with +6 coins!', '#3ff0ff'); } else C.fx('splash', i); break; }
+    case 'fzbell': { if (p.a !== 4) break; C.addCoins(i, 2); C.fx('star', i); C.msg('🔔 Gran Pueblo Viejo Bell!', C.nm(i) + ' rang the Cathedral Clocktower Bell! +2 fiesta coins!', '#ffd23f'); break; }
+    case 'fzshop': {
+      const sh = SHOPS.find((s) => s.id === v.shop);
+      const it = sh && sh.items[v.item | 0];
+      if (!sh || !it || S.pl[i].coins < it.p) { C.fx('wrong', i); break; }
+      C.addCoins(i, -it.p);
+      p.bf = { k: it.bf, u: F.t + 25 };
+      C.fx('fzeat', i);
+      C.msg(sh.icon + ' ' + sh.name, C.nm(i) + ' bought ' + it.e + ' ' + it.n + '!', '#ffd23f');
+      break;
+    }
+    case 'fzpet': {
+      const pd = PETS_DATA.find((q) => q.id === v.pet);
+      if (!pd) break;
+      const pkey = 'pet:' + i + ':' + pd.id;
+      const bonus = !met.has(pkey) ? pd.gift : 2;
+      met.set(pkey, 1);
+      C.addCoins(i, bonus);
+      p.bf = { k: pd.buff, u: F.t + 25 };
+      C.fx('star', i);
+      C.msg(pd.icon + ' ' + pd.name + ' (' + pd.title + ')', C.nm(i) + ' petted ' + pd.name + '! +' + bonus + ' coins & ' + pd.buff.toUpperCase() + ' buff!', '#4ade80');
+      break;
+    }
+    case 'fzhazard': {
+      if (p.bf && p.bf.k === 'shield' && p.bf.u > F.t) break;
+      const loss = Math.min(S.pl[i].coins, 3);
+      if (loss > 0) C.addCoins(i, -loss);
+      C.fx('wrong', i);
+      break;
+    }
+    case 'fzbailout': {
+      const grant = S.pl[i].coins < 12 ? (12 - S.pl[i].coins) : 5;
+      C.addCoins(i, grant);
+      p.bf = { k: 'shield', u: F.t + 30 };
+      C.fx('star', i);
+      C.msg('🛟 Ratita × Tortuga Emergency Bailout!', 'Candy & Torty restored ' + C.nm(i) + ' to 100% Stamina, Shield & +' + grant + ' coins for FREE (0 coins)!', '#4ade80');
+      break;
+    }
     case 'fzband': { if (p.a !== 1 || F.band > F.t) break; F.band = F.t + 24; C.msg('\uD83C\uDFBA Mariachi time!', C.nm(i) + ' requested a song from Mariachi Grok!', '#ffd23f'); break; }
     case 'fzbuild': { if (p.a !== 3 || F.castleRe > 0 || !near(A.castle.x, A.castle.z, 3)) break; const k = 'b' + i; if ((F[k] || -9) > F.t - 0.2) break; F[k] = F.t; F.castle++; C.fx('pop', i);
       if (F.castle >= 6) { F.castleRe = GP.FAST ? 4 : 25; C.addCoins(i, 4); F.castleBy = { id: ++F.uid, i }; C.fx('star', -1); C.msg('\uD83C\uDFF0 Sandcastle complete!', C.nm(i) + ' put the flag on top! +4 coins', '#ffd23f'); }
@@ -222,7 +377,7 @@ function rank(sc) { return sc >= 90 ? 'S' : sc >= 75 ? 'A' : sc >= 55 ? 'B' : 'C
 FZ.rank = rank;
 FZ.onPos = function (from, d) {
   const S = C.S_(), F = S && S.fz; if (!F) return; const i = C.seatOf(from); if (i < 0 || C.isBot(i)) return;
-  const p = F.p[i], a = clamp(d.a | 0, 0, 3), q = { x: +d.x || 0, z: +d.z || 0 }; bounds(a, q);
+  const p = F.p[i], a = clamp(d.a | 0, 0, W.AREAS.length - 1), q = { x: +d.x || 0, z: +d.z || 0 }; bounds(a, q);
   p.a = a; p.x = +q.x.toFixed(2); p.z = +q.z.toFixed(2); p.r = +(+d.r || 0).toFixed(2); p.em = EMOTES[d.em] || ['sit', 'nap', 'hit', 'build', 'eat'].includes(d.em) ? d.em : ''; p.mv = d.mv ? 1 : 0; p.bz = d.bz ? 1 : 0; p.gs = d.gs ? 1 : 0;
 };
 // --- CPU pals: wander, chase coins, eat, dance, whack pinatas, travel between towns, sometimes challenge you
@@ -244,7 +399,7 @@ function botStep(S, F, i, dt) {
     if (m.chalT <= 0 && humans.length && F.cd <= 0) { const j = humans[0]; m.goal = { x: F.p[j].x, z: F.p[j].z, act: 'chal', to: j }; m.chalT = GP.rand(110, 170); }
     else if (cs.length && r < 0.55) { const c = cs[0]; m.goal = { x: c[2], z: c[3], act: '' }; }
     else if (r < 0.75 && A.spots.length) { const s = GP.pick(A.spots.filter((q) => q.k !== 'bus')) || A.spots[0]; m.goal = { x: s.x + GP.rand(-0.6, 0.6), z: s.z + GP.rand(-0.6, 0.6), act: s.k, spot: s }; }
-    else if (r < 0.88) { const to = p.a === 0 ? GP.randi(1, 3) : 0; const g = p.a === 0 ? W.GATES[to] : W.EXIT; m.goal = { x: g[0], z: g[1] + (p.a === 0 ? 0 : 0.5), act: 'gate', to }; }
+    else if (r < 0.88) { const to = p.a === 0 ? GP.randi(1, W.AREAS.length - 1) : 0; const g = p.a === 0 ? W.GATES[to] : W.EXIT; m.goal = { x: g[0], z: g[1] + (p.a === 0 ? 0 : 0.5), act: 'gate', to }; }
     else { const q = { x: p.x + GP.rand(-8, 8), z: p.z + GP.rand(-8, 8) }; bounds(p.a, q); m.goal = { x: q.x, z: q.z, act: '' }; }
     m.giveUp = 9;
   }
@@ -297,9 +452,33 @@ function moveMe(S, dt) {
     bounds(m.a, q); m.x = q.x; m.z = q.z; m.r = GP.angLerp(m.r, Math.atan2(inp.jx, inp.jz), GP.damp(14, dt)); m.mv = true;
     if (m.em) m.em = '';
   } else m.mv = false;
+  // Check patrolling Fiesta Hazards (Runaway Spicy Chili Carts & Pinching Crabs)
+  const A = area(m.a);
+  if (A.hazards && (!m.hazCd || m.hazCd < S.fz.t)) {
+    for (const h of A.hazards) {
+      if (Math.hypot(m.x - h.x, m.z - h.z) < 1.15) {
+        m.hazCd = S.fz.t + 2.6;
+        if (myBuff(S) === 'shield') {
+          floatMe('🛡️ TORTUGA SHIELD BLOCKED!', '#4ade80');
+          GP.Snd.fx('right');
+        } else {
+          const s = save();
+          s.hp = Math.max(0, (s.hp || 100) - 25);
+          GP.persist();
+          act('fzhazard', { name: h.name });
+          floatMe('🌶️ OUCH! -25% Stamina · -3 🪙', '#ff4d6d');
+          say('me', 'Ouch! Hit by ' + h.name + '! (-25% Stamina, -3 coins). Use Torty & Candy Bailout if low!', 3600);
+          if (s.hp <= 0) {
+            setTimeout(() => { if (!panel) openPanel('pets'); }, 400);
+          }
+        }
+        break;
+      }
+    }
+  }
   // walk through a gate -> travel
   if (m.a === 0) { for (const k in W.GATES) { const g = W.GATES[k]; if (Math.hypot(m.x - g[0], m.z - g[1]) < 1.6) { travel(+k, 0, 11); break; } } }
-  else if (m.z > 13.4 && Math.abs(m.x) < 2.6) { const g = W.GATES[m.a]; travel(0, g[0] * 0.82, g[1] * 0.82 + (g[1] < 0 ? 0 : 1.5)); }
+  else if (m.z > 13.4 && Math.abs(m.x) < 2.6) { const g = W.GATES[m.a]; travel(0, g[0] * 0.82, g[1] * 0.82 + (g[1] < 0 ? 0 : -1.5)); }
 }
 function travel(a, x, z, bus) {
   if (fade > 0) return; fade = 1; fadeTo = { a, x, z }; GP.Snd.fx(bus ? 'fzbus' : 'whoosh');
@@ -320,7 +499,7 @@ function nearest(S) {
   S.fz.p.forEach((p, j) => { if (j === C.GS.me || p.a !== m.a) return; const d = Math.hypot(p.x - m.x, p.z - m.z); if (d < 2.2) consider({ k: 'chal', seat: j }, d + 2.6); });
   return best;
 }
-const LABEL = { talk: 'TALK', bus: 'BUS', dance: 'DANCE!', pin: 'WHACK!', wish: 'WISH', band: 'SONG!', eat: 'EAT', sit: 'SIT', nap: 'NAP', build: 'BUILD', chal: 'CHALLENGE' };
+const LABEL = { talk: 'TALK', bus: 'BUS', dance: 'DANCE!', pin: 'WHACK!', wish: 'WISH', band: 'SONG!', eat: 'EAT', sit: 'SIT', nap: 'NAP', build: 'BUILD', chal: 'CHALLENGE', shop: 'SHOP 🏪', pet: 'PET 🐾', bell: 'RING 🔔' };
 function act(k, v) { C.doAct({ k, v }); }
 function say(who, text, t) { bub = { who, text, until: performance.now() + (t || 3800) }; }
 const FORTUNES = ['You will find a big coin very soon!', 'A pi\u00f1ata is in your future...', 'Your dance moves will amaze everyone!', 'Tacos bring good luck. Eat more tacos.', 'A friend will challenge you. You will WIN!', 'The stars say: FIESTA!'];
@@ -330,7 +509,7 @@ function pressA() {
   if (c.k === 'talk') {
     const n = c.npc, s = save(); n._l = ((n._l === undefined ? -1 : n._l) + 1) % n.lines.length; say(n.id, n.lines[n._l]); GP.Snd.fx('fztalk'); act('fztalk', { npc: n.id });
     if (!s.talk.includes(n.id)) { s.talk.push(n.id); GP.persist(); if (s.talk.length >= 6) stamp('talk'); }
-    if (n.role === 'bus') openPanel('bus'); else if (n.role === 'food') openPanel('food', n.food); else if (n.role === 'dj') openPanel('dance'); else if (n.role === 'band') act('fzband'); else if (n.role === 'chal') openPanel('chal', n.id); else if (n.role === 'castle') act('fzbuild');
+    if (n.role === 'bus') openPanel('bus'); else if (n.role === 'food') openPanel('food', n.food); else if (n.role === 'shop') openPanel('shop', n.shop); else if (n.role === 'dj') openPanel('dance'); else if (n.role === 'band') act('fzband'); else if (n.role === 'chal') openPanel('chal', n.id); else if (n.role === 'castle') act('fzbuild');
     return;
   }
   if (c.k === 'bus') openPanel('bus');
@@ -343,6 +522,9 @@ function pressA() {
   else if (c.k === 'nap') { m.x = c.h.hx; m.z = c.h.hz; m.r = 0; setEm('nap', 99); napT = 0; }
   else if (c.k === 'build') { act('fzbuild'); setEm('build', 0.5); }
   else if (c.k === 'chal') openPanel('pchal', c.seat);
+  else if (c.k === 'shop') openPanel('shop', c.shop);
+  else if (c.k === 'pet') openPanel('pets', c.pet);
+  else if (c.k === 'bell') { act('fzbell'); setEm('wave', 1.2); }
 }
 FZ.pressA = pressA;
 let napT = 0, emHold = 0;
@@ -360,8 +542,30 @@ function openPanel(k, v) {
   else if (k === 'dance') { h = '<h2>\uD83D\uDC83 Dance Floor</h2><p>Arrows fall from the top. Tap the matching pad (or press \u2190 \u2191 \u2193 \u2192 / D F J K) right when they hit the line!</p><p>Rank S = 11 coins!</p><button class="btn primary" data-fz="dance">LET\'S DANCE!</button>'; }
   else if (k === 'chal') { const n = npcById(v), cd = S.fz.cd > 0; h = '<h2>\u2694\uFE0F ' + esc(n.name) + '</h2><p>"' + esc(n.lines[0]) + '"</p><p>Mini game: <b>' + esc(MGN(n.chal)) + '</b> \u00b7 everyone at the fiesta plays \u00b7 winner gets +8 coins</p><button class="btn primary" data-fz="chal" data-v="' + n.id + '"' + (cd ? ' disabled' : '') + '>' + (cd ? 'Catch your breath\u2026' : 'CHALLENGE!') + '</button>'; }
   else if (k === 'pchal') { const p = S.pl[v]; h = '<h2>\u2694\uFE0F Challenge ' + esc(p.name) + '?</h2><p>A random mini game for everyone at the fiesta. Winner gets 10 coins!</p><button class="btn primary" data-fz="pchal" data-v="' + v + '"' + (S.fz.cd > 0 ? ' disabled' : '') + '>CHALLENGE!</button>'; }
+  else if (k === 'shop') {
+    const sh = SHOPS.find((s) => s.id === v) || SHOPS[0], coins = S.pl[C.GS.me].coins, s = save();
+    h = '<h2>' + sh.icon + ' ' + esc(sh.name) + '</h2><p><b>' + esc(sh.keeper) + ':</b> "' + esc(sh.desc) + '"</p><p>You have <b>🪙 ' + coins + ' coins</b> · Stamina <b>❤️ ' + (s.hp || 100) + '%</b></p><div class="fzShopItems">' +
+      sh.items.map((it, idx) => '<div class="fzShopItem"><div><b>' + it.e + ' ' + esc(it.n) + '</b> <span class="fzPrice">🪙 ' + it.p + '</span><br><small>' + esc(it.d) + '</small></div>' +
+      '<button class="btn primary small" data-fz="buyitem" data-shop="' + sh.id + '" data-item="' + idx + '"' + (coins < it.p ? ' disabled' : '') + '>' + (coins < it.p ? 'Need ' + it.p + ' 🪙' : 'BUY (' + it.p + ' 🪙)') + '</button></div>').join('') +
+      '</div><div class="row" style="margin-top:8px"><button class="btn blue small" data-fz="shops">🏪 All 14 Stone Shops</button>' +
+      (coins < 4 || (s.hp || 100) < 100 ? '<button class="btn primary small" data-fz="bailout">🛟 Free Bailout (0 🪙)</button>' : '') + '</div>';
+  }
+  else if (k === 'shops') {
+    const coins = S.pl[C.GS.me].coins;
+    h = '<h2>🏪 Grand Cobblestone Shops (' + SHOPS.length + ' Shops)</h2><p>Explore stone shops across <b>Gran Pueblo Viejo</b> & the Fiesta Isles, or teleport straight to any shop door! (🪙 ' + coins + ' coins)</p><div class="fzShopDir">' +
+      SHOPS.map((sh) => '<div class="fzShopCard"><div><b>' + sh.icon + ' ' + esc(sh.name) + '</b> <small>(' + esc(W.AREAS[sh.a].name) + ')</small><br><small>' + esc(sh.desc) + '</small></div>' +
+      '<div class="fzShopBtns"><button class="btn primary small" data-fz="openshop" data-v="' + sh.id + '">Shop</button><button class="btn blue small" data-fz="tpshop" data-v="' + sh.id + '">Visit</button></div></div>').join('') + '</div>';
+  }
+  else if (k === 'pets') {
+    const s = save(), coins = S.pl[C.GS.me].coins;
+    h = '<h2>🐾 All 5 Fiesta Pets & Emergency Bailout</h2><p>Pet <b>Luna</b>, <b>Pi-rat</b>, <b>Snowie</b>, <b>Candy</b> & <b>Torty</b> for free coins, Stamina & shields! Hit by a Spicy Chili Cart or Crab? Claim Candy & Torty’s <b>Free Emergency Bailout (0 🪙)</b> so you’re never stuck!</p>' +
+      '<div class="fzBailBanner"><div><b>❤️ Stamina: ' + (s.hp || 100) + '%</b> · <b>🪙 Coins: ' + coins + '</b><br><small>Ratita Industries × Tortuga Tech Safety Guarantee: Never stuck at 0 coins or 0% Stamina!</small></div>' +
+      '<button class="btn primary small" data-fz="bailout">🛟 FREE BAILOUT (0 🪙)</button></div>' +
+      '<div class="fzShopDir">' + PETS_DATA.map((pd) => '<div class="fzShopCard' + (v === pd.id ? ' hi' : '') + '"><div><b>' + pd.icon + ' ' + esc(pd.name) + '</b> <small>· ' + esc(pd.title) + '</small><br><small>' + esc(pd.desc) + '</small></div>' +
+      '<button class="btn blue small" data-fz="petact" data-v="' + pd.id + '">🐾 Pet (+' + pd.gift + ' 🪙)</button></div>').join('') + '</div>';
+  }
   else if (k === 'pass') { const s = save(); h = '<h2>\uD83D\uDCD2 Fiesta Passport</h2><p>' + Object.keys(s.st).length + '/10 stamps' + (s.champ ? ' \u00b7 \uD83C\uDF1F GOLDEN SOMBRERO unlocked!' : ' \u00b7 collect all 10 for the Golden Sombrero') + '</p><div class="fzStamps">' + STAMPS.map((q) => '<div class="fzSt' + (s.st[q[0]] ? ' got' : '') + '"><i>' + q[1] + '</i><b>' + esc(q[2]) + '</b><small>' + esc(q[3]) + '</small></div>').join('') + '</div>'; }
-  $('fzCard').innerHTML = h + '<button class="btn alt small" data-fz="close">' + (k === 'pass' ? 'CLOSE' : 'MAYBE LATER') + '</button>'; $('fzPanel').classList.remove('hidden');
+  $('fzCard').innerHTML = h + '<button class="btn alt small" data-fz="close">' + (k === 'pass' || k === 'shops' || k === 'pets' ? 'CLOSE' : 'MAYBE LATER') + '</button>'; $('fzPanel').classList.remove('hidden');
 }
 function closePanel() { panel = ''; $('fzPanel').classList.add('hidden'); }
 FZ.openPanel = openPanel; FZ.closePanel = closePanel;
@@ -374,7 +578,52 @@ document.addEventListener('click', (e) => {
   else if (k === 'dance') { closePanel(); startDance(); }
   else if (k === 'chal') { closePanel(); act('fzchal', { to: v }); }
   else if (k === 'pchal') { closePanel(); act('fzchal', { to: +v }); }
-  else if (k === 'pass') { if (panel) closePanel(); else openPanel('pass'); }
+  else if (k === 'pass') { if (panel === 'pass') closePanel(); else openPanel('pass'); }
+  else if (k === 'busbtn') { if (panel === 'bus') closePanel(); else openPanel('bus'); }
+  else if (k === 'shops') { if (panel === 'shops') closePanel(); else openPanel('shops'); }
+  else if (k === 'pets') { if (panel === 'pets') closePanel(); else openPanel('pets'); }
+  else if (k === 'openshop') { openPanel('shop', v); }
+  else if (k === 'tpshop') {
+    const sh = SHOPS.find((s) => s.id === v);
+    if (sh) {
+      closePanel();
+      const A = area(sh.a), sp = (A.spots || []).find((q) => q.k === 'shop' && q.shop === sh.id);
+      travel(sh.a, sp ? sp.x : 0, sp ? sp.z + 1.2 : 8, true);
+    }
+  }
+  else if (k === 'buyitem') {
+    const shId = b.dataset.shop, idx = +b.dataset.item, sh = SHOPS.find((s) => s.id === shId), it = sh && sh.items[idx];
+    if (sh && it) {
+      closePanel();
+      act('fzshop', { shop: shId, item: idx });
+      const s = save();
+      if (it.bf === 'shield') s.hp = 100; else s.hp = Math.min(100, (s.hp || 100) + 35);
+      if (!s.shops.includes(shId)) s.shops.push(shId);
+      if (!s.foods.includes(shId)) { s.foods.push(shId); if (s.foods.length >= 3) stamp('eat'); }
+      GP.persist();
+      floatMe(it.e + ' ' + it.n + '!', '#ffe14d');
+    }
+  }
+  else if (k === 'petact') {
+    const pd = PETS_DATA.find((q) => q.id === v);
+    if (pd) {
+      closePanel();
+      act('fzpet', { pet: pd.id });
+      const s = save();
+      s.hp = 100;
+      if (!s.pets.includes(pd.id)) s.pets.push(pd.id);
+      if (!s.talk.includes('pet_' + pd.id)) { s.talk.push('pet_' + pd.id); if (s.talk.length >= 6) stamp('talk'); }
+      GP.persist();
+      say('me', pd.icon + ' Petted ' + pd.name + '! Stamina 100% & +' + pd.gift + ' coins!', 3600);
+    }
+  }
+  else if (k === 'bailout') {
+    closePanel();
+    const s = save(); s.hp = 100; s.bailouts = (s.bailouts || 0) + 1; GP.persist();
+    act('fzbailout', {});
+    floatMe('🛟 FREE BAILOUT! ❤️ 100%', '#4ade80');
+    say('me', '🛟 Candy & Torty Emergency Bailout! Restored 100% Stamina, Tortuga Shield & free Fiesta Coins!', 4200);
+  }
   else if (k === 'em') { if (!busy()) setEm(v); }
   else if (k === 'A') pressA();
   else if (k === 'buy') window.open(FZ.ARCADE, '_blank', 'noopener');
@@ -564,7 +813,7 @@ FZ.teaser = function () {
 };
 function injectDom() {
   const add = (html) => { const d = document.createElement('div'); d.innerHTML = html; while (d.firstChild) document.body.appendChild(d.firstChild); };
-  add('<div id="fzHud" class="hidden"><div id="fzTop"><div id="fzArea"></div><div id="fzCoins"></div><button type="button" id="fzPassB" data-fz="pass">\uD83D\uDCD2 0/10</button></div><div id="fzChips"></div><div id="fzBanner"><b></b><span></span></div>' +
+  add('<div id="fzHud" class="hidden"><div id="fzTop"><div id="fzArea"></div><div id="fzCoins"></div><div id="fzHp" data-fz="pets" title="Fiesta Stamina & Free Bailout">❤️ 100%</div><button type="button" id="fzTownsB" class="fzHudBtn" data-fz="busbtn">🗺️ 5 Towns</button><button type="button" id="fzShopsB" class="fzHudBtn" data-fz="shops">🏪 14 Shops</button><button type="button" id="fzPetsB" class="fzHudBtn" data-fz="pets">🐾 5 Pets</button><button type="button" id="fzPassB" data-fz="pass">\uD83D\uDCD2 0/10</button></div><div id="fzChips"></div><div id="fzBanner"><b></b><span></span></div>' +
     '<div id="fzEmotes">' + Object.keys(EMOTES).map((k) => '<button type="button" data-fz="em" data-v="' + k + '" title="' + k + '">' + EMOTES[k][0] + '</button>').join('') + '</div><button type="button" id="fzA" data-fz="A">WAVE</button><div id="fzHint"></div></div>' +
     '<div id="fzBubble" class="hidden"></div><div id="fzPanel" class="hidden"><div class="card fzCard" id="fzCard"></div></div>' +
     '<div id="fzDance" class="hidden"><div class="dhud"></div><div class="dlanes"></div><div class="dpads"></div></div><div id="fzFade"><b></b></div>' +
@@ -586,16 +835,21 @@ FZ.ui = function (S, ph, inMg) {
   if (!roam) { if (panel) closePanel(); if (dance && (!S || ph !== 'roam')) endDance(true); if (!S) { FZ.me = null; avSig = ''; } $('fzBubble').classList.add('hidden'); if (!S || S.mode !== 'fiesta') { lastArea = -1; } return; }
   C.show('mghud', true); C.show('joyzone', !busy());
   const me = C.GS.me, F = S.fz, A = FZ.me ? FZ.me.a : 0, coins = me >= 0 ? S.pl[me].coins : 0, bf = myBuff(S), s = save();
-  const sig = A + '|' + coins + '|' + bf + '|' + Object.keys(s.st).length + '|' + S.pl.map((p) => p.coins).join(',') + '|' + (ctx ? ctx.k + (ctx.npc ? ctx.npc.id : '') : '');
+  const hp = s.hp !== undefined ? s.hp : 100;
+  const bfIcon = bf === 'shield' ? '🛡️' : bf ? ((FOODS.find((f) => f.bf === bf) || { e: '✨' }).e) : '';
+  const sig = A + '|' + coins + '|' + hp + '|' + bf + '|' + Object.keys(s.st).length + '|' + S.pl.map((p) => p.coins).join(',') + '|' + (ctx ? ctx.k + (ctx.npc ? ctx.npc.id : '') + (ctx.shop || '') + (ctx.pet || '') : '');
   if (sig !== lastSig) {
     lastSig = sig;
     $('fzArea').innerHTML = W.AREAS[A].icon + ' ' + esc(W.AREAS[A].name);
-    $('fzCoins').innerHTML = '\uD83E\uDE99 <b>' + coins + '</b>' + (bf ? ' <em>' + FOODS.find((f) => f.bf === bf).e + '</em>' : '');
+    $('fzCoins').innerHTML = '\uD83E\uDE99 <b>' + coins + '</b>' + (bfIcon ? ' <em>' + bfIcon + '</em>' : '');
+    if ($('fzHp')) { $('fzHp').innerHTML = (bf === 'shield' ? '🛡️ ' : '❤️ ') + '<b>' + hp + '%</b>'; $('fzHp').classList.toggle('low', hp <= 50); }
     $('fzPassB').textContent = '\uD83D\uDCD2 ' + Object.keys(s.st).length + '/10';
     $('fzChips').innerHTML = S.pl.map((p, i) => '<div class="fzChip" style="--c:' + p.color + '">' + esc(p.name) + (p.bot ? ' <small>CPU</small>' : '') + (i === me ? ' <small>YOU</small>' : '') + ' <b>' + p.coins + '</b> <span>' + W.AREAS[F.p[i] ? F.p[i].a : 0].icon + '</span></div>').join('');
-    const lab = ctx ? (ctx.k === 'talk' ? (ctx.npc.role === 'chal' ? 'TALK \u2694\uFE0F' : ctx.npc.role === 'food' ? 'ORDER' : ctx.npc.role === 'bus' ? 'RIDE' : 'TALK') : LABEL[ctx.k]) : 'WAVE';
+    const lab = ctx ? (ctx.k === 'talk' ? (ctx.npc.role === 'chal' ? 'TALK \u2694\uFE0F' : ctx.npc.role === 'food' ? 'ORDER' : ctx.npc.role === 'shop' ? 'SHOP 🏪' : ctx.npc.role === 'bus' ? 'RIDE' : 'TALK') : LABEL[ctx.k]) : 'WAVE';
     $('fzA').textContent = lab; $('fzA').classList.toggle('ctx', !!ctx);
-    $('fzHint').textContent = ctx ? (ctx.k === 'talk' ? ctx.npc.name : ctx.k === 'chal' ? S.pl[ctx.seat].name : ctx.k === 'eat' ? FOODS[ctx.food].n + ' \u00b7 ' + FOODS[ctx.food].p + ' coins' : '') : (GP.IS_TOUCH ? '' : 'SPACE: action \u00b7 1-4: emotes \u00b7 Q: passport');
+    const shopObj = ctx && ctx.shop ? SHOPS.find((s) => s.id === ctx.shop) : null;
+    const petObj = ctx && ctx.pet ? PETS_DATA.find((p) => p.id === ctx.pet) : null;
+    $('fzHint').textContent = ctx ? (ctx.k === 'talk' ? ctx.npc.name : ctx.k === 'chal' ? S.pl[ctx.seat].name : ctx.k === 'eat' ? FOODS[ctx.food].n + ' \u00b7 ' + FOODS[ctx.food].p + ' coins' : ctx.k === 'shop' && shopObj ? shopObj.icon + ' ' + shopObj.name : ctx.k === 'pet' && petObj ? petObj.icon + ' ' + petObj.name + ' (' + petObj.title + ')' : ctx.k === 'bell' ? '🔔 Ring Gran Pueblo Viejo Clocktower Bell' : '') : (GP.IS_TOUCH ? '' : 'SPACE: action · 1-4: emotes · 🏪 14 Stone Shops · 🐾 5 Pets');
   }
   // banner for new host messages
   if (S.msg && S.msg.id !== seen.msg) { seen.msg = S.msg.id; bannerT = 3.2; const b = $('fzBanner'); b.querySelector('b').textContent = S.msg.t; b.querySelector('span').textContent = S.msg.s; b.style.setProperty('--bc', S.msg.c); }
